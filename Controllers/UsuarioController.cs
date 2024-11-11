@@ -2,6 +2,8 @@ using EnergyApi.Models;
 using EnergyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using AutoMapper;
+using EnergyApi.DTOs;
 
 namespace EnergyApi.Controllers
 {
@@ -10,36 +12,41 @@ namespace EnergyApi.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
+        private readonly IMapper _mapper;
 
-        public UsuarioController(IUsuarioService usuarioService)
+        public UsuarioController(IUsuarioService usuarioService, IMapper mapper)
         {
             _usuarioService = usuarioService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todos os usuários", Description = "Retorna uma lista de todos os usuários cadastrados.")]
         [SwaggerResponse(200, "Lista de usuários obtida com sucesso.")]
         [SwaggerResponse(204, "Nenhum usuário encontrado.")]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<UsuarioDto>>> GetUsuarios()
         {
             var usuarios = await _usuarioService.ObterTodosAsync();
             if (usuarios == null || !usuarios.Any())
             {
                 return NoContent();
             }
-            return Ok(usuarios);
+
+            var usuariosDto = _mapper.Map<IEnumerable<UsuarioDto>>(usuarios);
+            return Ok(usuariosDto);
         }
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter usuário por ID", Description = "Retorna um usuário específico pelo ID.")]
         [SwaggerResponse(200, "Usuário encontrado.")]
         [SwaggerResponse(404, "Usuário não encontrado.")]
-        public async Task<ActionResult<Usuario>> GetUsuarioById(int id)
+        public async Task<ActionResult<UsuarioDto>> GetUsuarioById(int id)
         {
             try
             {
                 var usuario = await _usuarioService.ObterPorIdAsync(id);
-                return Ok(usuario);
+                var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
+                return Ok(usuarioDto);
             }
             catch (KeyNotFoundException)
             {
@@ -51,12 +58,14 @@ namespace EnergyApi.Controllers
         [SwaggerOperation(Summary = "Adicionar um novo usuário", Description = "Cadastra um novo usuário.")]
         [SwaggerResponse(201, "Usuário criado com sucesso.")]
         [SwaggerResponse(400, "Dados inválidos para criar o usuário.")]
-        public async Task<ActionResult<Usuario>> CreateUsuario([FromBody] Usuario usuario)
+        public async Task<ActionResult<UsuarioDto>> CreateUsuario([FromBody] UsuarioDto usuarioDto)
         {
             try
             {
+                var usuario = _mapper.Map<Usuario>(usuarioDto);
                 var novoUsuario = await _usuarioService.AdicionarAsync(usuario);
-                return CreatedAtAction(nameof(GetUsuarioById), new { id = novoUsuario.Id }, novoUsuario);
+                var novoUsuarioDto = _mapper.Map<UsuarioDto>(novoUsuario);
+                return CreatedAtAction(nameof(GetUsuarioById), new { id = novoUsuarioDto.Id }, novoUsuarioDto);
             }
             catch (InvalidOperationException ex)
             {
@@ -68,15 +77,16 @@ namespace EnergyApi.Controllers
         [SwaggerOperation(Summary = "Atualizar um usuário", Description = "Atualiza os dados de um usuário existente.")]
         [SwaggerResponse(204, "Usuário atualizado com sucesso.")]
         [SwaggerResponse(404, "Usuário não encontrado.")]
-        public async Task<IActionResult> UpdateUsuario(int id, [FromBody] Usuario usuario)
+        public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuarioDto usuarioDto)
         {
-            if (id != usuario.Id)
+            if (id != usuarioDto.Id)
             {
                 return BadRequest(new { message = "O ID do usuário não corresponde ao ID na URL." });
             }
 
             try
             {
+                var usuario = _mapper.Map<Usuario>(usuarioDto);
                 await _usuarioService.AtualizarAsync(usuario);
                 return NoContent();
             }

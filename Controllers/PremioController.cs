@@ -2,6 +2,8 @@ using EnergyApi.Models;
 using EnergyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using AutoMapper;
+using EnergyApi.DTOs;
 
 namespace EnergyApi.Controllers
 {
@@ -10,29 +12,34 @@ namespace EnergyApi.Controllers
     public class PremioController : ControllerBase
     {
         private readonly IPremioService _premioService;
+        private readonly IMapper _mapper;
 
-        public PremioController(IPremioService premioService)
+        public PremioController(IPremioService premioService, IMapper mapper)
         {
             _premioService = premioService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todos os prêmios", Description = "Retorna uma lista de todos os prêmios disponíveis.")]
-        public async Task<ActionResult<IEnumerable<Premio>>> GetPremios()
+        public async Task<ActionResult<IEnumerable<PremioDto>>> GetPremios()
         {
             var premios = await _premioService.ObterTodosAsync();
             if (!premios.Any()) return NoContent();
-            return Ok(premios);
+
+            var premiosDto = _mapper.Map<IEnumerable<PremioDto>>(premios);
+            return Ok(premiosDto);
         }
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter prêmio por ID", Description = "Retorna um prêmio pelo ID.")]
-        public async Task<ActionResult<Premio>> GetPremioById(int id)
+        public async Task<ActionResult<PremioDto>> GetPremioById(int id)
         {
             try
             {
                 var premio = await _premioService.ObterPorIdAsync(id);
-                return Ok(premio);
+                var premioDto = _mapper.Map<PremioDto>(premio);
+                return Ok(premioDto);
             }
             catch (KeyNotFoundException ex)
             {
@@ -42,23 +49,27 @@ namespace EnergyApi.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Adicionar novo prêmio", Description = "Adiciona um novo prêmio ao sistema.")]
-        public async Task<ActionResult<Premio>> CreatePremio([FromBody] Premio premio)
+        public async Task<ActionResult<PremioDto>> CreatePremio([FromBody] PremioDto premioDto)
         {
+            var premio = _mapper.Map<Premio>(premioDto);
             var novoPremio = await _premioService.AdicionarAsync(premio);
-            return CreatedAtAction(nameof(GetPremioById), new { id = novoPremio.Id }, novoPremio);
+            var novoPremioDto = _mapper.Map<PremioDto>(novoPremio);
+
+            return CreatedAtAction(nameof(GetPremioById), new { id = novoPremioDto.Id }, novoPremioDto);
         }
 
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar um prêmio", Description = "Atualiza os dados de um prêmio existente.")]
-        public async Task<IActionResult> UpdatePremio(int id, [FromBody] Premio premio)
+        public async Task<IActionResult> UpdatePremio(int id, [FromBody] PremioDto premioDto)
         {
-            if (id != premio.Id)
+            if (id != premioDto.Id)
             {
                 return BadRequest(new { message = "O ID fornecido não corresponde ao ID do prêmio." });
             }
 
             try
             {
+                var premio = _mapper.Map<Premio>(premioDto);
                 await _premioService.AtualizarAsync(premio);
                 return NoContent();
             }

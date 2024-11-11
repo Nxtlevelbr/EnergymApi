@@ -1,7 +1,9 @@
+using EnergyApi.DTOs;
 using EnergyApi.Models;
 using EnergyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using AutoMapper;
 
 namespace EnergyApi.Controllers
 {
@@ -10,29 +12,34 @@ namespace EnergyApi.Controllers
     public class AcademiaController : ControllerBase
     {
         private readonly IAcademiaService _academiaService;
+        private readonly IMapper _mapper;
 
-        public AcademiaController(IAcademiaService academiaService)
+        public AcademiaController(IAcademiaService academiaService, IMapper mapper)
         {
             _academiaService = academiaService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todas as academias", Description = "Retorna uma lista de todas as academias cadastradas.")]
-        public async Task<ActionResult<IEnumerable<Academia>>> GetAcademias()
+        public async Task<ActionResult<IEnumerable<AcademiaDto>>> GetAcademias()
         {
             var academias = await _academiaService.ObterTodosAsync();
             if (!academias.Any()) return NoContent();
-            return Ok(academias);
+            
+            var academiasDto = _mapper.Map<IEnumerable<AcademiaDto>>(academias);
+            return Ok(academiasDto);
         }
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter academia por ID", Description = "Retorna uma academia pelo ID.")]
-        public async Task<ActionResult<Academia>> GetAcademiaById(int id)
+        public async Task<ActionResult<AcademiaDto>> GetAcademiaById(int id)
         {
             try
             {
                 var academia = await _academiaService.ObterPorIdAsync(id);
-                return Ok(academia);
+                var academiaDto = _mapper.Map<AcademiaDto>(academia);
+                return Ok(academiaDto);
             }
             catch (KeyNotFoundException ex)
             {
@@ -42,12 +49,15 @@ namespace EnergyApi.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Adicionar nova academia", Description = "Adiciona uma nova academia ao sistema.")]
-        public async Task<ActionResult<Academia>> CreateAcademia([FromBody] Academia academia)
+        public async Task<ActionResult<AcademiaDto>> CreateAcademia([FromBody] AcademiaDto academiaDto)
         {
             try
             {
+                var academia = _mapper.Map<Academia>(academiaDto);
                 var novaAcademia = await _academiaService.AdicionarAsync(academia);
-                return CreatedAtAction(nameof(GetAcademiaById), new { id = novaAcademia.Id }, novaAcademia);
+                var novaAcademiaDto = _mapper.Map<AcademiaDto>(novaAcademia);
+                
+                return CreatedAtAction(nameof(GetAcademiaById), new { id = novaAcademiaDto.Id }, novaAcademiaDto);
             }
             catch (InvalidOperationException ex)
             {
@@ -57,15 +67,16 @@ namespace EnergyApi.Controllers
 
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar uma academia", Description = "Atualiza os dados de uma academia existente.")]
-        public async Task<IActionResult> UpdateAcademia(int id, [FromBody] Academia academia)
+        public async Task<IActionResult> UpdateAcademia(int id, [FromBody] AcademiaDto academiaDto)
         {
-            if (id != academia.Id)
+            if (id != academiaDto.Id)
             {
                 return BadRequest(new { message = "O ID fornecido não corresponde ao ID da academia." });
             }
 
             try
             {
+                var academia = _mapper.Map<Academia>(academiaDto);
                 await _academiaService.AtualizarAsync(academia);
                 return NoContent();
             }

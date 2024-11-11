@@ -2,6 +2,8 @@ using EnergyApi.Models;
 using EnergyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using AutoMapper;
+using EnergyApi.DTOs;
 
 namespace EnergyApi.Controllers
 {
@@ -10,29 +12,34 @@ namespace EnergyApi.Controllers
     public class EnderecoController : ControllerBase
     {
         private readonly IEnderecoService _enderecoService;
+        private readonly IMapper _mapper;
 
-        public EnderecoController(IEnderecoService enderecoService)
+        public EnderecoController(IEnderecoService enderecoService, IMapper mapper)
         {
             _enderecoService = enderecoService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todos os endereços", Description = "Retorna uma lista de todos os endereços cadastrados.")]
-        public async Task<ActionResult<IEnumerable<Endereco>>> GetEnderecos()
+        public async Task<ActionResult<IEnumerable<EnderecoDto>>> GetEnderecos()
         {
             var enderecos = await _enderecoService.ObterTodosAsync();
             if (!enderecos.Any()) return NoContent();
-            return Ok(enderecos);
+
+            var enderecosDto = _mapper.Map<IEnumerable<EnderecoDto>>(enderecos);
+            return Ok(enderecosDto);
         }
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter endereço por ID", Description = "Retorna um endereço pelo ID.")]
-        public async Task<ActionResult<Endereco>> GetEnderecoById(int id)
+        public async Task<ActionResult<EnderecoDto>> GetEnderecoById(int id)
         {
             try
             {
                 var endereco = await _enderecoService.ObterPorIdAsync(id);
-                return Ok(endereco);
+                var enderecoDto = _mapper.Map<EnderecoDto>(endereco);
+                return Ok(enderecoDto);
             }
             catch (KeyNotFoundException ex)
             {
@@ -42,23 +49,27 @@ namespace EnergyApi.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Adicionar novo endereço", Description = "Adiciona um novo endereço ao sistema.")]
-        public async Task<ActionResult<Endereco>> CreateEndereco([FromBody] Endereco endereco)
+        public async Task<ActionResult<EnderecoDto>> CreateEndereco([FromBody] EnderecoDto enderecoDto)
         {
+            var endereco = _mapper.Map<Endereco>(enderecoDto);
             var novoEndereco = await _enderecoService.AdicionarAsync(endereco);
-            return CreatedAtAction(nameof(GetEnderecoById), new { id = novoEndereco.Id }, novoEndereco);
+            var novoEnderecoDto = _mapper.Map<EnderecoDto>(novoEndereco);
+
+            return CreatedAtAction(nameof(GetEnderecoById), new { id = novoEnderecoDto.Id }, novoEnderecoDto);
         }
 
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar um endereço", Description = "Atualiza os dados de um endereço existente.")]
-        public async Task<IActionResult> UpdateEndereco(int id, [FromBody] Endereco endereco)
+        public async Task<IActionResult> UpdateEndereco(int id, [FromBody] EnderecoDto enderecoDto)
         {
-            if (id != endereco.Id)
+            if (id != enderecoDto.Id)
             {
                 return BadRequest(new { message = "O ID fornecido não corresponde ao ID do endereço." });
             }
 
             try
             {
+                var endereco = _mapper.Map<Endereco>(enderecoDto);
                 await _enderecoService.AtualizarAsync(endereco);
                 return NoContent();
             }
