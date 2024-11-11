@@ -1,44 +1,106 @@
+using EnergyApi.Data;
+using EnergyApi.Repositories;
+using EnergyApi.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Configurar a string de conexão
+string? connectionString = builder.Configuration.GetConnectionString("OracleConnection");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("A string de conexão 'OracleConnection' não foi encontrada no appsettings.json.");
+}
+
+// Registra o ApplicationDbContext com timeout configurado
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseOracle(connectionString, oracleOptions =>
+    {
+        oracleOptions.CommandTimeout(60);
+    });
+});
+
+// Registrar Controladores
+builder.Services.AddControllers();
+
+// Configurar Swagger para documentação e habilitar anotações
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "EnergyApi",
+        Version = "v1",
+        Description = "API para gerenciamento de Energia Sustentável nas Academias",
+        Contact = new OpenApiContact
+        {
+            Name = "Suporte EnergyApi",
+            Email = "suporte@energyapi.com",
+            Url = new Uri("https://energyapi.com/support")
+        }
+    });
+    c.EnableAnnotations(); // Habilita o uso de anotações no Swagger
+});
+
+// Registrar repositórios e serviços para injeção de dependência
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+builder.Services.AddScoped<IAcademiaRepository, AcademiaRepository>();
+builder.Services.AddScoped<IAcademiaService, AcademiaService>();
+
+builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
+builder.Services.AddScoped<IEnderecoService, EnderecoService>();
+
+builder.Services.AddScoped<IRegistroExercicioRepository, RegistroExercicioRepository>();
+builder.Services.AddScoped<IRegistroExercicioService, RegistroExercicioService>();
+
+builder.Services.AddScoped<IPremioRepository, PremioRepository>();
+builder.Services.AddScoped<IPremioService, PremioService>();
+
+builder.Services.AddScoped<IResgateRepository, ResgateRepository>();
+builder.Services.AddScoped<IResgateService, ResgateService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Middleware global para tratamento de exceções
+app.UseExceptionHandler(errorApp =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    errorApp.Run(async context =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
 
-app.Run();
+        var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+        if (contextFeature != null)
+        {
+            await context.Response.WriteAsync(new
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+                Details = contextFeature?.Error.Message ?? "Erro desconhecido"
+            }.ToString() ?? "");
+        }
+    });
+});
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+// Configurar Swagger para UI e documentação
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "EnergyApi v1");
+    c.RoutePrefix = string.Empty; // Swagger estará disponível na raiz
+});
+
+// Middleware de autorização
+app.UseAuthorization();
+
+// Mapear controladores
+app.MapControllers();
+
+// Executar a aplicação
+app.Run();
