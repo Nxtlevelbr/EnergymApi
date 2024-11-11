@@ -15,7 +15,7 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("A string de conexão 'OracleConnection' não foi encontrada no appsettings.json.");
 }
 
-// Registra o ApplicationDbContext com timeout configurado
+// Registrar ApplicationDbContext com timeout configurado
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseOracle(connectionString, oracleOptions =>
@@ -67,40 +67,31 @@ builder.Services.AddScoped<IResgateService, ResgateService>();
 
 var app = builder.Build();
 
-// Middleware global para tratamento de exceções
-app.UseExceptionHandler(errorApp =>
+// Configuração de middleware global para tratamento de exceções
+if (!app.Environment.IsDevelopment())
 {
-    errorApp.Run(async context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/json";
-
-        var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-        if (contextFeature != null)
-        {
-            await context.Response.WriteAsync(new
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = "Ocorreu um erro inesperado. Tente novamente mais tarde.",
-                Details = contextFeature?.Error.Message ?? "Erro desconhecido"
-            }.ToString() ?? "");
-        }
-    });
-});
+    app.UseExceptionHandler("/error");
+}
 
 // Configurar Swagger para UI e documentação
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "EnergyApi v1");
-    c.RoutePrefix = string.Empty; // Swagger estará disponível na raiz
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "EnergyApi v1");
+        c.RoutePrefix = string.Empty; // Acessível na raiz
+    });
+}
 
 // Middleware de autorização
 app.UseAuthorization();
 
 // Mapear controladores
 app.MapControllers();
+
+// Alterar a URL da aplicação para porta 5070
+app.Urls.Add("http://localhost:5070");
 
 // Executar a aplicação
 app.Run();
