@@ -55,8 +55,15 @@ namespace EnergyApi.Services
 
         public async Task<bool> DeletarAsync(int id)
         {
+            var usuario = await _usuarioRepository.ObterPorIdAsync(id);
+            if (usuario == null)
+            {
+                throw new KeyNotFoundException("Usuário não encontrado.");
+            }
+
             return await _usuarioRepository.DeletarAsync(id);
         }
+
 
         public async Task<Usuario> ObterPorUsernameAsync(string username)
         {

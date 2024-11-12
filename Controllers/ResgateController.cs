@@ -89,5 +89,27 @@ namespace EnergyApi.Controllers
             }
             return NoContent();
         }
+
+        [HttpPost("registrar")]
+        [SwaggerOperation(Summary = "Registrar resgate", Description = "Registra um novo resgate baseado no ID do usuário e do prêmio.")]
+        [SwaggerResponse(201, "Resgate registrado com sucesso.")]
+        [SwaggerResponse(400, "Erro de validação ou pontos insuficientes.")]
+        public async Task<ActionResult<ResgateDto>> RegistrarResgate([FromQuery] int usuarioId, [FromQuery] int premioId)
+        {
+            try
+            {
+                var resgate = await _resgateService.RegistrarResgate(usuarioId, premioId);
+                var resgateDto = _mapper.Map<ResgateDto>(resgate);
+                return CreatedAtAction(nameof(GetResgateById), new { id = resgateDto.Id }, resgateDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }

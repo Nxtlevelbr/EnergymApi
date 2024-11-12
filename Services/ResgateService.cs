@@ -8,10 +8,17 @@ namespace EnergyApi.Services
     public class ResgateService : IResgateService
     {
         private readonly IResgateRepository _resgateRepository;
+        private readonly IPremioRepository _premioRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public ResgateService(IResgateRepository resgateRepository)
+        public ResgateService(
+            IResgateRepository resgateRepository, 
+            IPremioRepository premioRepository, 
+            IUsuarioRepository usuarioRepository)
         {
             _resgateRepository = resgateRepository;
+            _premioRepository = premioRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
         public async Task<Resgate> AdicionarAsync(Resgate resgate)
@@ -54,6 +61,44 @@ namespace EnergyApi.Services
         public async Task<bool> DeletarAsync(int id)
         {
             return await _resgateRepository.DeletarAsync(id);
+        }
+
+        public async Task<Resgate> RegistrarResgate(int usuarioId, int premioId)
+        {
+            // Validar se o prêmio existe
+            var premio = await _premioRepository.ObterPorIdAsync(premioId);
+            if (premio == null)
+            {
+                throw new KeyNotFoundException("Prêmio não encontrado.");
+            }
+
+            // Validar se o usuário existe
+            var usuario = await _usuarioRepository.ObterPorIdAsync(usuarioId);
+            if (usuario == null)
+            {
+                throw new KeyNotFoundException("Usuário não encontrado.");
+            }
+
+            // Validar se o usuário tem pontos suficientes
+            if (usuario.Pontos < premio.Pontos)
+            {
+                throw new InvalidOperationException("Pontos insuficientes para resgatar este prêmio.");
+            }
+
+            // Atualizar os pontos do usuário
+            usuario.Pontos -= premio.Pontos;
+            await _usuarioRepository.AtualizarAsync(usuario);
+
+            // Criar o resgate
+            var resgate = new Resgate
+            {
+                UsuarioId = usuarioId,
+                PremioId = premioId,
+                DataHora = DateTime.Now
+            };
+
+            // Salvar o resgate
+            return await _resgateRepository.AdicionarAsync(resgate);
         }
     }
 }
