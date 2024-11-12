@@ -56,7 +56,7 @@ namespace EnergyApi.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Adicionar um novo usuário", Description = "Cadastra um novo usuário.")]
-        [SwaggerResponse(201, "Usuário criado com sucesso.")]
+        [SwaggerResponse(201, "Usuário criado com sucesso.", typeof(UsuarioDto))]
         [SwaggerResponse(400, "Dados inválidos para criar o usuário.")]
         public async Task<ActionResult<UsuarioDto>> CreateUsuario([FromBody] UsuarioDto usuarioDto)
         {
@@ -72,6 +72,7 @@ namespace EnergyApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar um usuário", Description = "Atualiza os dados de um usuário existente.")]

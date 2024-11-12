@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,5 +30,8 @@ namespace EnergyApi.Models
         [Column("tipo")]
         [StringLength(50)]
         public string Tipo { get; set; } // Ex: "Produto" ou "Serviço"
+
+        [Column("ativo")]
+        public bool Ativo { get; set; } = true;
     }
 }

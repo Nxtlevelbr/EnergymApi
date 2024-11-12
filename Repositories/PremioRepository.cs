@@ -27,6 +27,11 @@ namespace EnergyApi.Repositories
             return await _context.Premios.FindAsync(id);
         }
 
+        public Task<IEnumerable<Premio>> ObterTodosAsync(bool incluirInativos = false)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<Premio>> ObterTodosAsync()
         {
             return await _context.Premios.AsNoTracking().ToListAsync();

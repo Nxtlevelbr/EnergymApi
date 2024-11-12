@@ -25,6 +25,8 @@ namespace EnergyApi.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todos os registros de exercícios", Description = "Retorna uma lista de todos os registros de exercícios.")]
+        [SwaggerResponse(200, "Lista de registros retornada com sucesso.")]
+        [SwaggerResponse(204, "Nenhum registro encontrado.")]
         public async Task<ActionResult<IEnumerable<RegistroExercicioDto>>> GetRegistros()
         {
             var registros = await _registroExercicioService.ObterTodosAsync();
@@ -33,6 +35,7 @@ namespace EnergyApi.Controllers
             var registrosDto = _mapper.Map<IEnumerable<RegistroExercicioDto>>(registros);
             return Ok(registrosDto);
         }
+
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter registro por ID", Description = "Retorna um registro de exercício pelo ID.")]

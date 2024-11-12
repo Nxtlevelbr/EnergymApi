@@ -11,5 +11,7 @@ namespace EnergyApi.DTOs
         public string Empresa { get; set; } // Empresa fornecedora do prêmio
 
         public string Tipo { get; set; } // Tipo do prêmio, ex: "Produto" ou "Serviço"
+
+        public bool Ativo { get; set; } // Indica se o prêmio está ativo
     }
 }

@@ -94,6 +94,7 @@ namespace EnergyApi.Controllers
         [SwaggerOperation(Summary = "Registrar resgate", Description = "Registra um novo resgate baseado no ID do usuário e do prêmio.")]
         [SwaggerResponse(201, "Resgate registrado com sucesso.")]
         [SwaggerResponse(400, "Erro de validação ou pontos insuficientes.")]
+        [SwaggerResponse(404, "Usuário ou prêmio não encontrados.")]
         public async Task<ActionResult<ResgateDto>> RegistrarResgate([FromQuery] int usuarioId, [FromQuery] int premioId)
         {
             try
@@ -111,5 +112,6 @@ namespace EnergyApi.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+
+        }
     }
-}

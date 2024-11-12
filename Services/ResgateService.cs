@@ -1,5 +1,6 @@
 using EnergyApi.Models;
 using EnergyApi.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -60,6 +61,12 @@ namespace EnergyApi.Services
 
         public async Task<bool> DeletarAsync(int id)
         {
+            var resgateExistente = await _resgateRepository.ObterPorIdAsync(id);
+            if (resgateExistente == null)
+            {
+                throw new KeyNotFoundException("Resgate não encontrado.");
+            }
+
             return await _resgateRepository.DeletarAsync(id);
         }
 
@@ -79,11 +86,14 @@ namespace EnergyApi.Services
                 throw new KeyNotFoundException("Usuário não encontrado.");
             }
 
-            // Validar se o usuário tem pontos suficientes
+            // Validar se o usuário tem pontos suficientes para ativar o prêmio
             if (usuario.Pontos < premio.Pontos)
             {
                 throw new InvalidOperationException("Pontos insuficientes para resgatar este prêmio.");
             }
+
+            // Se o usuário tiver pontos suficientes, o prêmio é considerado ativo
+            premio.Ativo = true;
 
             // Atualizar os pontos do usuário
             usuario.Pontos -= premio.Pontos;
@@ -94,7 +104,7 @@ namespace EnergyApi.Services
             {
                 UsuarioId = usuarioId,
                 PremioId = premioId,
-                DataHora = DateTime.Now
+                DataHora = DateTime.UtcNow
             };
 
             // Salvar o resgate

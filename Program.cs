@@ -1,5 +1,9 @@
 using System;
+using System.IO;
+using System.Reflection;
+using AutoMapper;
 using EnergyApi.Data;
+using EnergyApi.Mappings;
 using EnergyApi.Repositories;
 using EnergyApi.Services;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +32,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     });
 });
 
+// Registrar perfis do AutoMapper explicitamente
+builder.Services.AddSingleton(provider => 
+    new MapperConfiguration(cfg => 
+    {
+        cfg.AddProfile(new AcademiaProfile());
+    }).CreateMapper()
+);
+
 // Registrar Controladores
 builder.Services.AddControllers();
 
@@ -48,7 +59,11 @@ builder.Services.AddSwaggerGen(c =>
             Url = new Uri("https://energyapi.com/support")
         }
     });
-    c.EnableAnnotations(); // Habilita o uso de anotações no Swagger
+    c.EnableAnnotations();
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 });
 
 // Registrar repositórios e serviços para injeção de dependência
@@ -72,14 +87,20 @@ builder.Services.AddScoped<IResgateService, ResgateService>();
 
 var app = builder.Build();
 
-// Configuração de middleware global para tratamento de exceções
+// Middleware global de tratamento de exceções
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/error");
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsJsonAsync(new { error = "Um erro inesperado ocorreu. Tente novamente mais tarde." });
+        });
+    });
 }
-
-// Configurar Swagger para UI e documentação
-if (app.Environment.IsDevelopment())
+else
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>

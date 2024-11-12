@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using EnergyApi.Models;
 
 namespace EnergyApi.Data
@@ -16,6 +17,11 @@ namespace EnergyApi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var boolToIntConverter = new ValueConverter<bool, int>(
+                v => v ? 1 : 0, 
+                v => v == 1
+            );
+
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -68,6 +74,12 @@ namespace EnergyApi.Data
                 entity.Property(e => e.Pontos).IsRequired();
                 entity.Property(e => e.Empresa).IsRequired();
                 entity.Property(e => e.Tipo).IsRequired();
+
+                // Adiciona a conversão manual de bool para int
+                entity.Property(p => p.Ativo)
+                      .HasConversion(boolToIntConverter)
+                      .HasColumnType("NUMBER(1)")
+                      .IsRequired();
             });
 
             modelBuilder.Entity<Resgate>(entity =>

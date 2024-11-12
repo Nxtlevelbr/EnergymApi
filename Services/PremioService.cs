@@ -1,6 +1,7 @@
 using EnergyApi.Models;
 using EnergyApi.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnergyApi.Services
@@ -16,6 +17,8 @@ namespace EnergyApi.Services
 
         public async Task<Premio> AdicionarAsync(Premio premio)
         {
+            // Novos prêmios começam como ativos
+            premio.Ativo = true;
             return await _premioRepository.AdicionarAsync(premio);
         }
 
@@ -30,9 +33,15 @@ namespace EnergyApi.Services
             return premio;
         }
 
-        public async Task<IEnumerable<Premio>> ObterTodosAsync()
+        public Task<IEnumerable<Premio>> ObterTodosAsync()
         {
-            return await _premioRepository.ObterTodosAsync();
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Premio>> ObterTodosAsync(bool incluirInativos = false)
+        {
+            var premios = await _premioRepository.ObterTodosAsync();
+            return incluirInativos ? premios : premios.Where(p => p.Ativo);
         }
 
         public async Task<Premio> AtualizarAsync(Premio premio)
@@ -49,6 +58,19 @@ namespace EnergyApi.Services
         public async Task<bool> DeletarAsync(int id)
         {
             return await _premioRepository.DeletarAsync(id);
+        }
+
+        public async Task<bool> AtivarOuDesativarPremioAsync(int id, bool ativar)
+        {
+            var premio = await _premioRepository.ObterPorIdAsync(id);
+            if (premio == null)
+            {
+                throw new KeyNotFoundException("Prêmio não encontrado.");
+            }
+
+            premio.Ativo = ativar;
+            await _premioRepository.AtualizarAsync(premio);
+            return true;
         }
     }
 }

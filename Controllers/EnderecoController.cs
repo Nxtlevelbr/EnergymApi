@@ -25,6 +25,8 @@ namespace EnergyApi.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todos os endereços", Description = "Retorna uma lista de todos os endereços cadastrados.")]
+        [SwaggerResponse(200, "Lista de endereços retornada com sucesso.")]
+        [SwaggerResponse(204, "Nenhum endereço encontrado.")]
         public async Task<ActionResult<IEnumerable<EnderecoDto>>> GetEnderecos()
         {
             var enderecos = await _enderecoService.ObterTodosAsync();
@@ -33,6 +35,7 @@ namespace EnergyApi.Controllers
             var enderecosDto = _mapper.Map<IEnumerable<EnderecoDto>>(enderecos);
             return Ok(enderecosDto);
         }
+
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter endereço por ID", Description = "Retorna um endereço pelo ID.")]

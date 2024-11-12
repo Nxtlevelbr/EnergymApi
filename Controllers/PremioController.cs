@@ -22,6 +22,8 @@ namespace EnergyApi.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todos os prêmios", Description = "Retorna uma lista de todos os prêmios disponíveis.")]
+        [SwaggerResponse(200, "Lista de prêmios retornada com sucesso.")]
+        [SwaggerResponse(204, "Nenhum prêmio encontrado.")]
         public async Task<ActionResult<IEnumerable<PremioDto>>> GetPremios()
         {
             var premios = await _premioService.ObterTodosAsync();
@@ -30,6 +32,7 @@ namespace EnergyApi.Controllers
             var premiosDto = _mapper.Map<IEnumerable<PremioDto>>(premios);
             return Ok(premiosDto);
         }
+
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter prêmio por ID", Description = "Retorna um prêmio pelo ID.")]

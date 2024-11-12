@@ -26,6 +26,8 @@ namespace EnergyApi.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todas as academias", Description = "Retorna uma lista de todas as academias cadastradas.")]
+        [SwaggerResponse(200, "Lista de academias retornada com sucesso.", typeof(IEnumerable<AcademiaDto>))]
+        [SwaggerResponse(204, "Nenhuma academia encontrada.")]
         public async Task<ActionResult<IEnumerable<AcademiaDto>>> GetAcademias()
         {
             var academias = await _academiaService.ObterTodosAsync();
@@ -37,6 +39,8 @@ namespace EnergyApi.Controllers
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter academia por ID", Description = "Retorna uma academia pelo ID.")]
+        [SwaggerResponse(200, "Academia encontrada com sucesso.", typeof(AcademiaDto))]
+        [SwaggerResponse(404, "Academia não encontrada.")]
         public async Task<ActionResult<AcademiaDto>> GetAcademiaById(int id)
         {
             try
@@ -53,6 +57,8 @@ namespace EnergyApi.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Adicionar nova academia", Description = "Adiciona uma nova academia ao sistema.")]
+        [SwaggerResponse(201, "Academia criada com sucesso.", typeof(AcademiaDto))]
+        [SwaggerResponse(400, "Erro de validação ou operação inválida.")]
         public async Task<ActionResult<AcademiaDto>> CreateAcademia([FromBody] AcademiaDto academiaDto)
         {
             try
@@ -71,6 +77,9 @@ namespace EnergyApi.Controllers
 
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar uma academia", Description = "Atualiza os dados de uma academia existente.")]
+        [SwaggerResponse(204, "Academia atualizada com sucesso.")]
+        [SwaggerResponse(400, "O ID fornecido não corresponde ao ID da academia.")]
+        [SwaggerResponse(404, "Academia não encontrada.")]
         public async Task<IActionResult> UpdateAcademia(int id, [FromBody] AcademiaDto academiaDto)
         {
             if (id != academiaDto.Id)
@@ -92,6 +101,8 @@ namespace EnergyApi.Controllers
 
         [HttpDelete("{id}")]
         [SwaggerOperation(Summary = "Excluir uma academia", Description = "Remove uma academia pelo ID.")]
+        [SwaggerResponse(204, "Academia excluída com sucesso.")]
+        [SwaggerResponse(404, "Academia não encontrada.")]
         public async Task<IActionResult> DeleteAcademia(int id)
         {
             var sucesso = await _academiaService.DeletarAsync(id);
