@@ -48,7 +48,14 @@ namespace EnergyApi.Services
 
         public async Task<bool> DeletarAsync(int id)
         {
+            var endereco = await _enderecoRepository.ObterPorIdAsync(id);
+            if (endereco == null)
+            {
+                throw new KeyNotFoundException("Endereço não encontrado.");
+            }
+
             return await _enderecoRepository.DeletarAsync(id);
         }
+
     }
 }
