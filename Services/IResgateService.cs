@@ -12,5 +12,6 @@ namespace EnergyApi.Services
         Task<IEnumerable<Resgate>> ObterPorUsuarioAsync(int usuarioId);
         Task<Resgate> AtualizarAsync(Resgate resgate);
         Task<bool> DeletarAsync(int id);
+        Task<Resgate> RegistrarResgate(int usuarioId, int premioId);
     }
 }
