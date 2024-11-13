@@ -40,8 +40,13 @@ namespace EnergyApi.Services
 
         public async Task<IEnumerable<Premio>> ObterTodosAsync(bool incluirInativos = false)
         {
-            var premios = await _premioRepository.ObterTodosAsync();
-            return incluirInativos ? premios : premios.Where(p => p.Ativo);
+            var premios = await _premioRepository.ObterTodosAsync(incluirInativos);
+            return premios;
+        }
+
+        public async Task<IEnumerable<Premio>> ObterPremiosAtivosAsync()
+        {
+            return await _premioRepository.ObterPremiosAtivosAsync();
         }
 
         public async Task<Premio> AtualizarAsync(Premio premio)

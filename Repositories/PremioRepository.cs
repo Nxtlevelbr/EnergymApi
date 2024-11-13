@@ -2,6 +2,7 @@ using EnergyApi.Data;
 using EnergyApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnergyApi.Repositories
@@ -24,17 +25,17 @@ namespace EnergyApi.Repositories
 
         public async Task<Premio> ObterPorIdAsync(int id)
         {
-            return await _context.Premios.FindAsync(id);
+            return await _context.Premios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public Task<IEnumerable<Premio>> ObterTodosAsync(bool incluirInativos = false)
+        public async Task<IEnumerable<Premio>> ObterTodosAsync(bool incluirInativos = false)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Premio>> ObterTodosAsync()
-        {
-            return await _context.Premios.AsNoTracking().ToListAsync();
+            return await _context.Premios
+                .AsNoTracking()
+                .Where(p => incluirInativos || p.Ativo) // Trabalha diretamente com bool
+                .ToListAsync();
         }
 
         public async Task<Premio> AtualizarAsync(Premio premio)
@@ -42,6 +43,7 @@ namespace EnergyApi.Repositories
             var premioExistente = await _context.Premios.FindAsync(premio.Id);
             if (premioExistente == null) return null;
 
+            // Atualiza os valores
             _context.Entry(premioExistente).CurrentValues.SetValues(premio);
             await _context.SaveChangesAsync();
             return premioExistente;
@@ -55,6 +57,14 @@ namespace EnergyApi.Repositories
             _context.Premios.Remove(premio);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<Premio>> ObterPremiosAtivosAsync()
+        {
+            return await _context.Premios
+                .AsNoTracking()
+                .Where(p => p.Ativo) // Apenas prêmios ativos
+                .ToListAsync();
         }
     }
 }
