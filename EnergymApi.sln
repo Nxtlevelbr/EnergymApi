@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 #
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnergymApi", "EnergymApi.csproj", "{D5516D66-C4FC-4191-A356-C9A6237F34EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnergymApi", "EnergymApi\EnergymApi.csproj", "{CBC9904D-26A9-47EF-B3D7-1C6E2EDB2431}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnergymTests", "EnergymTests\EnergymTests.csproj", "{40F3075A-4434-4FE9-B2C5-8202EF53CA72}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnergymTests", "EnergymTests\EnergymTests.csproj", "{FE6DD9AD-E03E-4649-B2AF-66DE4B548A46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +11,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D5516D66-C4FC-4191-A356-C9A6237F34EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5516D66-C4FC-4191-A356-C9A6237F34EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5516D66-C4FC-4191-A356-C9A6237F34EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5516D66-C4FC-4191-A356-C9A6237F34EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40F3075A-4434-4FE9-B2C5-8202EF53CA72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40F3075A-4434-4FE9-B2C5-8202EF53CA72}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40F3075A-4434-4FE9-B2C5-8202EF53CA72}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40F3075A-4434-4FE9-B2C5-8202EF53CA72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBC9904D-26A9-47EF-B3D7-1C6E2EDB2431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBC9904D-26A9-47EF-B3D7-1C6E2EDB2431}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBC9904D-26A9-47EF-B3D7-1C6E2EDB2431}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBC9904D-26A9-47EF-B3D7-1C6E2EDB2431}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE6DD9AD-E03E-4649-B2AF-66DE4B548A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE6DD9AD-E03E-4649-B2AF-66DE4B548A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE6DD9AD-E03E-4649-B2AF-66DE4B548A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE6DD9AD-E03E-4649-B2AF-66DE4B548A46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
