@@ -14,5 +14,6 @@ namespace EnergyApi.Repositories
         Task<Usuario> ObterPorUsernameAsync(string username);
         Task<Usuario> ObterPorEmailAsync(string email);
         Task<Usuario> ObterPorCPFAsync(string cpf);
+        Task<Usuario> ObterPorUsuarioIdAsync(int usuarioId);
     }
 }

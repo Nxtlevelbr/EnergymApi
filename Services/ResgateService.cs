@@ -2,6 +2,7 @@ using EnergyApi.Models;
 using EnergyApi.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnergyApi.Services
@@ -11,15 +12,18 @@ namespace EnergyApi.Services
         private readonly IResgateRepository _resgateRepository;
         private readonly IPremioRepository _premioRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IRegistroExercicioRepository _registroExercicioRepository;
 
         public ResgateService(
-            IResgateRepository resgateRepository, 
-            IPremioRepository premioRepository, 
-            IUsuarioRepository usuarioRepository)
+            IResgateRepository resgateRepository,
+            IPremioRepository premioRepository,
+            IUsuarioRepository usuarioRepository,
+            IRegistroExercicioRepository registroExercicioRepository)
         {
             _resgateRepository = resgateRepository;
             _premioRepository = premioRepository;
             _usuarioRepository = usuarioRepository;
+            _registroExercicioRepository = registroExercicioRepository;
         }
 
         public async Task<Resgate> AdicionarAsync(Resgate resgate)
@@ -72,11 +76,11 @@ namespace EnergyApi.Services
 
         public async Task<Resgate> RegistrarResgate(int usuarioId, int premioId)
         {
-            // Validar se o prêmio existe
+            // Validar se o prêmio existe e está ativo
             var premio = await _premioRepository.ObterPorIdAsync(premioId);
-            if (premio == null)
+            if (premio == null || !premio.Ativo)
             {
-                throw new KeyNotFoundException("Prêmio não encontrado.");
+                throw new KeyNotFoundException("Prêmio não encontrado ou inativo.");
             }
 
             // Validar se o usuário existe
@@ -86,20 +90,20 @@ namespace EnergyApi.Services
                 throw new KeyNotFoundException("Usuário não encontrado.");
             }
 
-            // Validar se o usuário tem pontos suficientes para ativar o prêmio
-            if (usuario.Pontos < premio.Pontos)
+            // Verificar os registros de exercícios para calcular pontos acumulados
+            var registrosExercicios = await _registroExercicioRepository.ObterPorUsuarioAsync(usuarioId);
+            var pontosAcumulados = registrosExercicios.Sum(re => re.Km); // 1 ponto por Km
+
+            if (pontosAcumulados <= 0 || pontosAcumulados < premio.Pontos)
             {
                 throw new InvalidOperationException("Pontos insuficientes para resgatar este prêmio.");
             }
 
-            // Se o usuário tiver pontos suficientes, o prêmio é considerado ativo
-            premio.Ativo = true;
-
-            // Atualizar os pontos do usuário
+            // Deduzir os pontos acumulados e atualizar o usuário
             usuario.Pontos -= premio.Pontos;
             await _usuarioRepository.AtualizarAsync(usuario);
 
-            // Criar o resgate
+            // Criar e registrar o resgate
             var resgate = new Resgate
             {
                 UsuarioId = usuarioId,
@@ -107,7 +111,6 @@ namespace EnergyApi.Services
                 DataHora = DateTime.UtcNow
             };
 
-            // Salvar o resgate
             return await _resgateRepository.AdicionarAsync(resgate);
         }
     }

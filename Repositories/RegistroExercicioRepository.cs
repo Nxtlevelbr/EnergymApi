@@ -1,8 +1,6 @@
 using EnergyApi.Data;
 using EnergyApi.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EnergyApi.Repositories
 {
@@ -76,5 +74,21 @@ namespace EnergyApi.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public Task<object> ObterPorUsuarioIdAsync(int usuarioId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> ObterPontosTotaisPorUsuarioAsync(int usuarioId)
+        {
+            var totalKm = await _context.RegistrosExercicios
+                .Where(r => r.UsuarioId == usuarioId)
+                .SumAsync(r => r.Km); // Km é double
+
+            // Corrigir a conversão de double para int
+            return (int)totalKm;
+        }
+
     }
 }

@@ -13,5 +13,6 @@ namespace EnergyApi.Repositories
         Task<IEnumerable<RegistroExercicio>> ObterPorAcademiaAsync(int academiaId);
         Task<RegistroExercicio> AtualizarAsync(RegistroExercicio registroExercicio);
         Task<bool> DeletarAsync(int id);
+        Task<object> ObterPorUsuarioIdAsync(int usuarioId);
     }
 }

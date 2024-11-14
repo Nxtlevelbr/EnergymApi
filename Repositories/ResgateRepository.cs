@@ -1,8 +1,7 @@
 using EnergyApi.Data;
 using EnergyApi.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
 
 namespace EnergyApi.Repositories
 {
@@ -44,6 +43,15 @@ namespace EnergyApi.Repositories
             return await _context.Resgates
                 .Where(r => r.UsuarioId == usuarioId)
                 .Include(r => r.Premio)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Resgate>> ObterPorPremioIdAsync(int premioId)
+        {
+            return await _context.Resgates
+                .Where(r => r.PremioId == premioId)
+                .Include(r => r.Usuario)
                 .AsNoTracking()
                 .ToListAsync();
         }

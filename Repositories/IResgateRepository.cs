@@ -12,5 +12,7 @@ namespace EnergyApi.Repositories
         Task<IEnumerable<Resgate>> ObterPorUsuarioAsync(int usuarioId);
         Task<Resgate> AtualizarAsync(Resgate resgate);
         Task<bool> DeletarAsync(int id);
+        Task<IEnumerable<Resgate>> ObterPorPremioIdAsync(int premioId);
+
     }
 }

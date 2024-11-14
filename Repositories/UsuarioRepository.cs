@@ -1,73 +1,68 @@
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using EnergyApi.Data;
 using EnergyApi.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using EnergyApi.Repositories;
 
-namespace EnergyApi.Repositories
+public class UsuarioRepository : IUsuarioRepository
 {
-    public class UsuarioRepository : IUsuarioRepository
+    private readonly ApplicationDbContext _context;
+
+    public UsuarioRepository(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public UsuarioRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+    public Task<Usuario> AdicionarAsync(Usuario usuario)
+    {
+        throw new NotImplementedException();
+    }
 
-        public async Task<Usuario> AdicionarAsync(Usuario usuario)
-        {
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
-            return usuario;
-        }
+    public async Task<Usuario> ObterPorIdAsync(int id)
+    {
+        return await _context.Usuarios.FindAsync(id);
+    }
 
-        public async Task<Usuario> ObterPorIdAsync(int id)
-        {
-            return await _context.Usuarios.FindAsync(id);
-        }
+    public Task<IEnumerable<Usuario>> ObterTodosAsync()
+    {
+        throw new NotImplementedException();
+    }
 
-        public async Task<IEnumerable<Usuario>> ObterTodosAsync()
-        {
-            return await _context.Usuarios.AsNoTracking().ToListAsync();
-        }
+    Task<Usuario> IUsuarioRepository.AtualizarAsync(Usuario usuario)
+    {
+        throw new NotImplementedException();
+    }
 
-        public async Task<Usuario> AtualizarAsync(Usuario usuario)
-        {
-            var usuarioExistente = await _context.Usuarios.FindAsync(usuario.Id);
-            if (usuarioExistente == null) return null;
+    public Task<bool> DeletarAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
 
-            _context.Entry(usuarioExistente).CurrentValues.SetValues(usuario);
-            await _context.SaveChangesAsync();
-            return usuarioExistente;
-        }
+    public Task<Usuario> ObterPorUsernameAsync(string username)
+    {
+        throw new NotImplementedException();
+    }
 
-        public async Task<bool> DeletarAsync(int id)
-        {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null) return false;
+    public Task<Usuario> ObterPorEmailAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
 
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+    public Task<Usuario> ObterPorCPFAsync(string cpf)
+    {
+        throw new NotImplementedException();
+    }
 
-        public async Task<Usuario> ObterPorUsernameAsync(string username)
-        {
-            return await _context.Usuarios.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Username == username);
-        }
+    public async Task<Usuario> ObterPorUsuarioIdAsync(int usuarioId)
+    {
+        return await _context.Usuarios
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == usuarioId);
+    }
 
-        public async Task<Usuario> ObterPorEmailAsync(string email)
-        {
-            return await _context.Usuarios.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task<Usuario> ObterPorCPFAsync(string cpf)
-        {
-            return await _context.Usuarios.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.CPF == cpf);
-        }
+    public async Task AtualizarAsync(Usuario usuario)
+    {
+        _context.Usuarios.Update(usuario);
+        await _context.SaveChangesAsync();
     }
 }
