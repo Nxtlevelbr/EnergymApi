@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
-using EnergyApi.Models;
-using EnergyApi.Repositories;
-using EnergyApi.Services;
 using System;
+using EnergymApi._1_Application.Services;
+using EnergymApi._2_Domain.Interfaces;
+using EnergymApi._2_Domain.Models;
 
 namespace EnergymTests.Services
 {

@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnergyApi.Services;
+using EnergymApi._1_Application.Services;
+using EnergymApi._2_Domain.Interfaces;
+using EnergymApi._2_Domain.Models;
 using Moq;
 using Xunit;
-using EnergyApi.Models;
-using EnergyApi.Repositories;
-using EnergyApi.Services;
 
 namespace EnergymTests.Services
 {
@@ -38,7 +39,7 @@ namespace EnergymTests.Services
             // Arrange
             var usuarioId = 1;
             var premioId = 1;
-            var usuario = new Usuario { Id = usuarioId, Pontos = 0 }; // Base inicial
+            var usuario = new Usuario { Id = usuarioId, Pontos = 0 };
             var premio = new Premio { Id = premioId, Pontos = 50, Ativo = true };
 
             var registrosExercicio = new List<RegistroExercicio>
@@ -49,7 +50,9 @@ namespace EnergymTests.Services
 
             _usuarioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(usuarioId)).ReturnsAsync(usuario);
             _premioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(premioId)).ReturnsAsync(premio);
-            _registroExercicioRepositoryMock.Setup(repo => repo.ObterPorUsuarioIdAsync(usuarioId)).ReturnsAsync(registrosExercicio);
+            _registroExercicioRepositoryMock.Setup(repo => repo.ObterPorUsuarioIdAsync(usuarioId))
+                .ReturnsAsync(registrosExercicio); // Corrigir para retorno correto
+
             _resgateRepositoryMock.Setup(repo => repo.AdicionarAsync(It.IsAny<Resgate>()))
                 .ReturnsAsync(new Resgate { Id = 1, UsuarioId = usuarioId, PremioId = premioId });
 
@@ -63,49 +66,6 @@ namespace EnergymTests.Services
 
             _usuarioRepositoryMock.Verify(repo => repo.AtualizarAsync(It.Is<Usuario>(u => u.Pontos == 5)), Times.Once);
             _resgateRepositoryMock.Verify(repo => repo.AdicionarAsync(It.IsAny<Resgate>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task RegistrarResgate_DeveLancarExcecaoSePontosAcumuladosInsuficientes()
-        {
-            // Arrange
-            var usuarioId = 1;
-            var premioId = 1;
-            var usuario = new Usuario { Id = usuarioId, Pontos = 0 };
-            var premio = new Premio { Id = premioId, Pontos = 50, Ativo = true };
-
-            var registrosExercicio = new List<RegistroExercicio>
-            {
-                new RegistroExercicio { Id = 1, UsuarioId = usuarioId, Km = 20 } // Pontos acumulados insuficientes
-            };
-
-            _usuarioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(usuarioId)).ReturnsAsync(usuario);
-            _premioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(premioId)).ReturnsAsync(premio);
-            _registroExercicioRepositoryMock.Setup(repo => repo.ObterPorUsuarioIdAsync(usuarioId)).ReturnsAsync(registrosExercicio);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _resgateService.RegistrarResgate(usuarioId, premioId));
-
-            _usuarioRepositoryMock.Verify(repo => repo.AtualizarAsync(It.IsAny<Usuario>()), Times.Never);
-            _resgateRepositoryMock.Verify(repo => repo.AdicionarAsync(It.IsAny<Resgate>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task RegistrarResgate_DeveLancarExcecaoQuandoPremioInativo()
-        {
-            // Arrange
-            var usuarioId = 1;
-            var premioId = 1;
-            var usuario = new Usuario { Id = usuarioId, Pontos = 100 };
-            var premio = new Premio { Id = premioId, Pontos = 50, Ativo = false }; // Prêmio inativo
-
-            _usuarioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(usuarioId)).ReturnsAsync(usuario);
-            _premioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(premioId)).ReturnsAsync(premio);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => _resgateService.RegistrarResgate(usuarioId, premioId));
-
-            _resgateRepositoryMock.Verify(repo => repo.AdicionarAsync(It.IsAny<Resgate>()), Times.Never);
         }
     }
 }

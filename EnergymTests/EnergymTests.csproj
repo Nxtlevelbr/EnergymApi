@@ -1,4 +1,3 @@
-
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
@@ -18,8 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\EnergymApi.csproj" />
-        <ProjectReference Include="..\EnergymApi\EnergymApi.csproj" />
+        <ProjectReference Include="../EnergymApi/EnergymApi.csproj" />
     </ItemGroup>
 
 </Project>

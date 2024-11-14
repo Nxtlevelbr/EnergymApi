@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using EnergymApi._1_Application.Services;
+using EnergymApi._2_Domain.Interfaces;
+using EnergymApi._2_Domain.Models;
 using Moq;
 using Xunit;
-using EnergyApi.Models;
-using EnergyApi.Repositories;
-using EnergyApi.Services;
 
 namespace EnergymTests.Services
 {
