@@ -75,20 +75,12 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
             return true;
         }
 
-        public Task<object> ObterPorUsuarioIdAsync(int usuarioId)
+        public async Task<IEnumerable<RegistroExercicio>> ObterPorUsuarioIdAsync(int usuarioId)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<int> ObterPontosTotaisPorUsuarioAsync(int usuarioId)
-        {
-            var totalKm = await _context.RegistrosExercicios
+            return await _context.RegistrosExercicios
                 .Where(r => r.UsuarioId == usuarioId)
-                .SumAsync(r => r.Km); // Km é double
-
-            // Corrigir a conversão de double para int
-            return (int)totalKm;
+                .AsNoTracking()
+                .ToListAsync();
         }
-
     }
 }

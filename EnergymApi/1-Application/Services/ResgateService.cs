@@ -1,5 +1,6 @@
-using System;
-using System.Linq; // Necessário para Sum
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using EnergymApi._1_Application.Interfaces;
 using EnergymApi._2_Domain.Interfaces;
 using EnergymApi._2_Domain.Models;
@@ -87,8 +88,11 @@ namespace EnergyApi.Services
                 throw new KeyNotFoundException("Usuário não encontrado.");
             }
 
-            var registrosExercicio = await _registroExercicioRepository.ObterPorUsuarioIdAsync(usuarioId);
-            var pontosAcumulados = registrosExercicio.Sum(re => re.Km);
+            var registrosExercicio = await _registroExercicioRepository.ObterPorUsuarioAsync(usuarioId) ??
+                                     new List<RegistroExercicio>();
+
+            // Verificar se Km é double e realizar a conversão apropriada
+            var pontosAcumulados = registrosExercicio.Sum(re => (int)re.Km);
 
             if (pontosAcumulados < premio.Pontos)
             {
