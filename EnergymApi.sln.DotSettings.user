@@ -3,5 +3,6 @@
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::FE6DD9AD-E03E-4649-B2AF-66DE4B548A46::net8.0::EnergymTests.Services.ResgateServiceTests.RegistrarResgate_DeveRegistrarQuandoPontosAcumuladosSuficientes&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::FE6DD9AD-E03E-4649-B2AF-66DE4B548A46::net8.0::EnergymTests.Services.UsuarioServiceTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::FE6DD9AD-E03E-4649-B2AF-66DE4B548A46::net8.0::EnergymTests.mappingconfigtest.AutoMapper_Configuration_IsValid&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

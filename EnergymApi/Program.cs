@@ -7,6 +7,7 @@ using EnergymApi._1_Application.Services;
 using EnergymApi._2_Domain.Interfaces;
 using EnergymApi._3_Infrastructure.Data;
 using EnergymApi._3_Infrastructure.Data.Repositories;
+using EnergymApi._3_Infrastructure.ML.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -33,7 +34,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddSingleton(provider => 
     new MapperConfiguration(cfg => 
     {
+        cfg.AddProfile(new UsuarioProfile());
         cfg.AddProfile(new AcademiaProfile());
+        cfg.AddProfile(new PremioProfile());
+        cfg.AddProfile(new EnderecoProfile());
+        cfg.AddProfile(new RegistroExercicioProfile());
+        cfg.AddProfile(new ResgateProfile());
     }).CreateMapper()
 );
 
@@ -81,6 +87,9 @@ builder.Services.AddScoped<IPremioService, PremioService>();
 
 builder.Services.AddScoped<IResgateRepository, ResgateRepository>();
 builder.Services.AddScoped<IResgateService, ResgateService>();
+
+// Registrar o serviço de recomendação de prêmios com ML.NET
+builder.Services.AddSingleton<PremioRecomendationService>();
 
 var app = builder.Build();
 
