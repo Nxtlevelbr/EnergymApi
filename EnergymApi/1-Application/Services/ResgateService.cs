@@ -90,8 +90,7 @@ namespace EnergyApi.Services
 
             var registrosExercicio = await _registroExercicioRepository.ObterPorUsuarioAsync(usuarioId) ??
                                      new List<RegistroExercicio>();
-
-            // Verificar se Km é double e realizar a conversão apropriada
+            
             var pontosAcumulados = registrosExercicio.Sum(re => (int)re.Km);
 
             if (pontosAcumulados < premio.Pontos)

@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EnergyApi.Services;
-using EnergymApi._1_Application.Services;
 using EnergymApi._2_Domain.Interfaces;
 using EnergymApi._2_Domain.Models;
 using Moq;
@@ -42,24 +37,39 @@ namespace EnergymTests.Services
             var usuario = new Usuario { Id = usuarioId, Pontos = 0 };
             var premio = new Premio { Id = premioId, Pontos = 50, Ativo = true };
 
+            // Registros de exercício com total de 55 pontos
             var registrosExercicio = new List<RegistroExercicio>
             {
                 new RegistroExercicio { Id = 1, UsuarioId = usuarioId, Km = 30 },
-                new RegistroExercicio { Id = 2, UsuarioId = usuarioId, Km = 25 }
+                new RegistroExercicio { Id = 2, UsuarioId = usuarioId, Km = 25 },
+                new RegistroExercicio { Id = 3, UsuarioId = usuarioId, Km = 12 }
+                
             };
 
-            _usuarioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(usuarioId)).ReturnsAsync(usuario);
-            _premioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(premioId)).ReturnsAsync(premio);
-            _registroExercicioRepositoryMock.Setup(repo => repo.ObterPorUsuarioIdAsync(usuarioId))
-                .ReturnsAsync(registrosExercicio); // Corrigir para retorno correto
+            // Mockando os métodos dos repositórios
+            _usuarioRepositoryMock
+                .Setup(repo => repo.ObterPorIdAsync(usuarioId))
+                .ReturnsAsync(usuario);
 
-            _resgateRepositoryMock.Setup(repo => repo.AdicionarAsync(It.IsAny<Resgate>()))
-                .ReturnsAsync(new Resgate { Id = 1, UsuarioId = usuarioId, PremioId = premioId });
+            _premioRepositoryMock
+                .Setup(repo => repo.ObterPorIdAsync(premioId))
+                .ReturnsAsync(premio);
 
-            // Act
+            _registroExercicioRepositoryMock
+                .Setup(repo => repo.ObterPorUsuarioIdAsync(usuarioId))
+                .ReturnsAsync(registrosExercicio);
+
+            _resgateRepositoryMock
+                .Setup(repo => repo.AdicionarAsync(It.IsAny<Resgate>()))
+                .ReturnsAsync((Resgate resgate) => resgate);
+
+            _usuarioRepositoryMock
+                .Setup(repo => repo.AtualizarAsync(It.IsAny<Usuario>()))
+                .ReturnsAsync((Usuario u) => u);
+            
             var resultado = await _resgateService.RegistrarResgate(usuarioId, premioId);
 
-            // Assert
+            
             Assert.NotNull(resultado);
             Assert.Equal(usuarioId, resultado.UsuarioId);
             Assert.Equal(premioId, resultado.PremioId);
@@ -67,5 +77,6 @@ namespace EnergymTests.Services
             _usuarioRepositoryMock.Verify(repo => repo.AtualizarAsync(It.Is<Usuario>(u => u.Pontos == 5)), Times.Once);
             _resgateRepositoryMock.Verify(repo => repo.AdicionarAsync(It.IsAny<Resgate>()), Times.Once);
         }
+
     }
 }

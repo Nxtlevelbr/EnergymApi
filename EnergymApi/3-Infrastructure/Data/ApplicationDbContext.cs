@@ -18,7 +18,7 @@ namespace EnergymApi._3_Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var boolToIntConverter = new ValueConverter<bool, int>(
-                v => v ? 1 : 0, 
+                v => v ? 1 : 0,
                 v => v == 1
             );
 
@@ -28,9 +28,9 @@ namespace EnergymApi._3_Infrastructure.Data
                 entity.HasIndex(e => e.Username).IsUnique();
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.HasIndex(e => e.CPF).IsUnique();
-                entity.Property(e => e.Username).IsRequired();
-                entity.Property(e => e.Email).IsRequired();
-                entity.Property(e => e.CPF).IsRequired();
+                entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.CPF).IsRequired().HasMaxLength(11);
                 entity.Property(e => e.Senha).IsRequired();
             });
 
@@ -38,21 +38,22 @@ namespace EnergymApi._3_Infrastructure.Data
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.CNPJ).IsUnique();
-                entity.Property(e => e.Nome).IsRequired();
+                entity.Property(e => e.Nome).IsRequired().HasMaxLength(100);
             });
 
             modelBuilder.Entity<RegistroExercicio>(entity =>
             {
-                entity.HasKey(e => e.Id); // Chave primária simples
-                entity.Property(e => e.Km).IsRequired();
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Km).IsRequired().HasColumnType("FLOAT");
+                entity.Property(e => e.DataHora).IsRequired();
 
                 entity.HasOne(e => e.Usuario)
-                      .WithMany()
+                      .WithMany(u => u.RegistrosExercicios)
                       .HasForeignKey(e => e.UsuarioId)
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Academia)
-                      .WithMany()
+                      .WithMany(a => a.RegistrosExercicios)
                       .HasForeignKey(e => e.AcademiaId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
@@ -60,22 +61,21 @@ namespace EnergymApi._3_Infrastructure.Data
             modelBuilder.Entity<Endereco>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.CEP).IsRequired();
-                entity.Property(e => e.Estado).IsRequired();
-                entity.Property(e => e.Cidade).IsRequired();
-                entity.Property(e => e.Rua).IsRequired();
-                entity.Property(e => e.Numero).IsRequired();
+                entity.Property(e => e.CEP).IsRequired().HasMaxLength(8);
+                entity.Property(e => e.Estado).IsRequired().HasMaxLength(2);
+                entity.Property(e => e.Cidade).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Rua).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Numero).IsRequired().HasMaxLength(10);
             });
 
             modelBuilder.Entity<Premio>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Descricao).IsRequired();
+                entity.Property(e => e.Descricao).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Pontos).IsRequired();
-                entity.Property(e => e.Empresa).IsRequired();
-                entity.Property(e => e.Tipo).IsRequired();
+                entity.Property(e => e.Empresa).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Tipo).IsRequired().HasMaxLength(50);
 
-                // Adiciona a conversão manual de bool para int
                 entity.Property(p => p.Ativo)
                       .HasConversion(boolToIntConverter)
                       .HasColumnType("NUMBER(1)")
@@ -88,12 +88,12 @@ namespace EnergymApi._3_Infrastructure.Data
                 entity.Property(e => e.DataHora).IsRequired();
 
                 entity.HasOne(e => e.Usuario)
-                      .WithMany()
+                      .WithMany(u => u.Resgates)
                       .HasForeignKey(e => e.UsuarioId)
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Premio)
-                      .WithMany()
+                      .WithMany(p => p.Resgates)
                       .HasForeignKey(e => e.PremioId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
