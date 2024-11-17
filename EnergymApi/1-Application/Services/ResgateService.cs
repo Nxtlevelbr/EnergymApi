@@ -1,12 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using EnergymApi._1_Application.Interfaces;
 using EnergymApi._2_Domain.Interfaces;
 using EnergymApi._2_Domain.Models;
 
 namespace EnergyApi.Services
 {
+    /// <summary>
+    /// Serviço para gerenciar resgates de prêmios.
+    /// </summary>
     public class ResgateService : IResgateService
     {
         private readonly IResgateRepository _resgateRepository;
@@ -14,6 +15,9 @@ namespace EnergyApi.Services
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IRegistroExercicioRepository _registroExercicioRepository;
 
+        /// <summary>
+        /// Construtor do ResgateService.
+        /// </summary>
         public ResgateService(
             IResgateRepository resgateRepository,
             IPremioRepository premioRepository,
@@ -26,11 +30,13 @@ namespace EnergyApi.Services
             _registroExercicioRepository = registroExercicioRepository;
         }
 
+        /// <inheritdoc />
         public async Task<Resgate> AdicionarAsync(Resgate resgate)
         {
             return await _resgateRepository.AdicionarAsync(resgate);
         }
 
+        /// <inheritdoc />
         public async Task<Resgate> ObterPorIdAsync(int id)
         {
             var resgate = await _resgateRepository.ObterPorIdAsync(id);
@@ -42,16 +48,19 @@ namespace EnergyApi.Services
             return resgate;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Resgate>> ObterTodosAsync()
         {
             return await _resgateRepository.ObterTodosAsync();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Resgate>> ObterPorUsuarioAsync(int usuarioId)
         {
             return await _resgateRepository.ObterPorUsuarioAsync(usuarioId);
         }
 
+        /// <inheritdoc />
         public async Task<Resgate> AtualizarAsync(Resgate resgate)
         {
             var resgateExistente = await _resgateRepository.ObterPorIdAsync(resgate.Id);
@@ -63,6 +72,7 @@ namespace EnergyApi.Services
             return await _resgateRepository.AtualizarAsync(resgate);
         }
 
+        /// <inheritdoc />
         public async Task<bool> DeletarAsync(int id)
         {
             var resgateExistente = await _resgateRepository.ObterPorIdAsync(id);
@@ -74,6 +84,9 @@ namespace EnergyApi.Services
             return await _resgateRepository.DeletarAsync(id);
         }
 
+        /// <summary>
+        /// Registra um resgate de prêmio.
+        /// </summary>
         public async Task<Resgate> RegistrarResgate(int usuarioId, int premioId)
         {
             var premio = await _premioRepository.ObterPorIdAsync(premioId);
@@ -88,9 +101,7 @@ namespace EnergyApi.Services
                 throw new KeyNotFoundException("Usuário não encontrado.");
             }
 
-            var registrosExercicio = await _registroExercicioRepository.ObterPorUsuarioAsync(usuarioId) ??
-                                     new List<RegistroExercicio>();
-            
+            var registrosExercicio = await _registroExercicioRepository.ObterPorUsuarioAsync(usuarioId) ?? new List<RegistroExercicio>();
             var pontosAcumulados = registrosExercicio.Sum(re => (int)re.Km);
 
             if (pontosAcumulados < premio.Pontos)

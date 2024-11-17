@@ -4,15 +4,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EnergymApi._3_Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repositório para operações relacionadas à entidade <see cref="RegistroExercicio"/>.
+    /// </summary>
     public class RegistroExercicioRepository : IRegistroExercicioRepository
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Inicializa uma nova instância de <see cref="RegistroExercicioRepository"/>.
+        /// </summary>
+        /// <param name="context">Contexto do banco de dados.</param>
         public RegistroExercicioRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        /// <inheritdoc/>
         public async Task<RegistroExercicio> AdicionarAsync(RegistroExercicio registroExercicio)
         {
             _context.RegistrosExercicios.Add(registroExercicio);
@@ -20,6 +28,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
             return registroExercicio;
         }
 
+        /// <inheritdoc/>
         public async Task<RegistroExercicio> ObterPorIdAsync(int id)
         {
             return await _context.RegistrosExercicios
@@ -28,6 +37,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<RegistroExercicio>> ObterTodosAsync()
         {
             return await _context.RegistrosExercicios
@@ -37,6 +47,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<RegistroExercicio>> ObterPorUsuarioAsync(int usuarioId)
         {
             return await _context.RegistrosExercicios
@@ -46,6 +57,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<RegistroExercicio>> ObterPorAcademiaAsync(int academiaId)
         {
             return await _context.RegistrosExercicios
@@ -55,6 +67,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<RegistroExercicio> AtualizarAsync(RegistroExercicio registroExercicio)
         {
             var registroExistente = await _context.RegistrosExercicios.FindAsync(registroExercicio.Id);
@@ -65,6 +78,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
             return registroExistente;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> DeletarAsync(int id)
         {
             var registro = await _context.RegistrosExercicios.FindAsync(id);
@@ -75,6 +89,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
             return true;
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<RegistroExercicio>> ObterPorUsuarioIdAsync(int usuarioId)
         {
             return await _context.RegistrosExercicios

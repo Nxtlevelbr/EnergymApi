@@ -4,15 +4,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EnergymApi._3_Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repositório para operações relacionadas à entidade <see cref="Resgate"/>.
+    /// </summary>
     public class ResgateRepository : IResgateRepository
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Inicializa uma nova instância de <see cref="ResgateRepository"/>.
+        /// </summary>
+        /// <param name="context">Contexto do banco de dados.</param>
         public ResgateRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        /// <inheritdoc/>
         public async Task<Resgate> AdicionarAsync(Resgate resgate)
         {
             _context.Resgates.Add(resgate);
@@ -20,6 +28,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
             return resgate;
         }
 
+        /// <inheritdoc/>
         public async Task<Resgate> ObterPorIdAsync(int id)
         {
             return await _context.Resgates
@@ -28,6 +37,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Resgate>> ObterTodosAsync()
         {
             return await _context.Resgates
@@ -37,6 +47,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Resgate>> ObterPorUsuarioAsync(int usuarioId)
         {
             return await _context.Resgates
@@ -46,6 +57,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Resgate>> ObterPorPremioIdAsync(int premioId)
         {
             return await _context.Resgates
@@ -55,6 +67,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<Resgate> AtualizarAsync(Resgate resgate)
         {
             var resgateExistente = await _context.Resgates.FindAsync(resgate.Id);
@@ -65,6 +78,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
             return resgateExistente;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> DeletarAsync(int id)
         {
             var resgate = await _context.Resgates.FindAsync(id);
