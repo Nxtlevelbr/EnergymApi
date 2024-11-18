@@ -7,6 +7,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EnergymApi._0_Presentation.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pelas operações relacionadas às academias.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AcademiaController : ControllerBase
@@ -14,12 +17,21 @@ namespace EnergymApi._0_Presentation.Controllers
         private readonly IAcademiaService _academiaService;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Construtor do AcademiaController.
+        /// </summary>
+        /// <param name="academiaService">Serviço de academias.</param>
+        /// <param name="mapper">Instância do AutoMapper para mapeamento de objetos.</param>
         public AcademiaController(IAcademiaService academiaService, IMapper mapper)
         {
             _academiaService = academiaService;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Obtém todas as academias cadastradas.
+        /// </summary>
+        /// <returns>Uma lista de todas as academias.</returns>
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todas as academias", Description = "Retorna uma lista de todas as academias cadastradas.")]
         [SwaggerResponse(200, "Lista de academias retornada com sucesso.", typeof(IEnumerable<AcademiaDto>))]
@@ -28,11 +40,16 @@ namespace EnergymApi._0_Presentation.Controllers
         {
             var academias = await _academiaService.ObterTodosAsync();
             if (!academias.Any()) return NoContent();
-            
+
             var academiasDto = _mapper.Map<IEnumerable<AcademiaDto>>(academias);
             return Ok(academiasDto);
         }
 
+        /// <summary>
+        /// Obtém uma academia específica pelo ID.
+        /// </summary>
+        /// <param name="id">ID da academia.</param>
+        /// <returns>Detalhes da academia.</returns>
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter academia por ID", Description = "Retorna uma academia pelo ID.")]
         [SwaggerResponse(200, "Academia encontrada com sucesso.", typeof(AcademiaDto))]
@@ -51,6 +68,11 @@ namespace EnergymApi._0_Presentation.Controllers
             }
         }
 
+        /// <summary>
+        /// Adiciona uma nova academia ao sistema.
+        /// </summary>
+        /// <param name="academiaDto">Objeto contendo os dados da nova academia.</param>
+        /// <returns>A academia criada.</returns>
         [HttpPost]
         [SwaggerOperation(Summary = "Adicionar nova academia", Description = "Adiciona uma nova academia ao sistema.")]
         [SwaggerResponse(201, "Academia criada com sucesso.", typeof(AcademiaDto))]
@@ -62,7 +84,7 @@ namespace EnergymApi._0_Presentation.Controllers
                 var academia = _mapper.Map<Academia>(academiaDto);
                 var novaAcademia = await _academiaService.AdicionarAsync(academia);
                 var novaAcademiaDto = _mapper.Map<AcademiaDto>(novaAcademia);
-                
+
                 return CreatedAtAction(nameof(GetAcademiaById), new { id = novaAcademiaDto.Id }, novaAcademiaDto);
             }
             catch (InvalidOperationException ex)
@@ -71,6 +93,12 @@ namespace EnergymApi._0_Presentation.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza os dados de uma academia existente.
+        /// </summary>
+        /// <param name="id">ID da academia a ser atualizada.</param>
+        /// <param name="academiaDto">Objeto contendo os novos dados da academia.</param>
+        /// <returns>Resposta sem conteúdo se a atualização for bem-sucedida.</returns>
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar uma academia", Description = "Atualiza os dados de uma academia existente.")]
         [SwaggerResponse(204, "Academia atualizada com sucesso.")]
@@ -95,6 +123,11 @@ namespace EnergymApi._0_Presentation.Controllers
             }
         }
 
+        /// <summary>
+        /// Exclui uma academia pelo seu ID.
+        /// </summary>
+        /// <param name="id">ID da academia a ser excluída.</param>
+        /// <returns>Resposta sem conteúdo se a exclusão for bem-sucedida.</returns>
         [HttpDelete("{id}")]
         [SwaggerOperation(Summary = "Excluir uma academia", Description = "Remove uma academia pelo ID.")]
         [SwaggerResponse(204, "Academia excluída com sucesso.")]

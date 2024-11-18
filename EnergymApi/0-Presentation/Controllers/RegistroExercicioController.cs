@@ -61,6 +61,7 @@ namespace EnergymApi._0_Presentation.Controllers
             return CreatedAtAction(nameof(GetRegistroById), new { id = novoRegistroDto.Id }, novoRegistroDto);
         }
 
+
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar um registro de exercício", Description = "Atualiza os dados de um registro existente.")]
         public async Task<IActionResult> UpdateRegistro(int id, [FromBody] RegistroExercicioDto registroExercicioDto)

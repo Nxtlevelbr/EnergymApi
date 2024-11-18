@@ -19,7 +19,13 @@ public class mappingconfigtest
             cfg.AddProfile(new ResgateProfile());
         });
 
-        config.AssertConfigurationIsValid(); // Lança exceção se houver mapeamento inválido.
+        try
+        {
+            config.AssertConfigurationIsValid();
+        }
+        catch (AutoMapperConfigurationException ex)
+        {
+            Assert.True(false, $"AutoMapper configuration is invalid: {ex.Message}");
+        }
     }
-
 }

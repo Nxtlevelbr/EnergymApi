@@ -51,11 +51,6 @@ namespace EnergymApi._3_Infrastructure.Data
                       .WithMany(u => u.RegistrosExercicios)
                       .HasForeignKey(e => e.UsuarioId)
                       .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.Academia)
-                      .WithMany(a => a.RegistrosExercicios)
-                      .HasForeignKey(e => e.AcademiaId)
-                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Endereco>(entity =>

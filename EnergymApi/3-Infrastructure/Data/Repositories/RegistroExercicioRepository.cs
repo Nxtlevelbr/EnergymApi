@@ -33,7 +33,6 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
         {
             return await _context.RegistrosExercicios
                 .Include(r => r.Usuario)
-                .Include(r => r.Academia)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
@@ -42,7 +41,6 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
         {
             return await _context.RegistrosExercicios
                 .Include(r => r.Usuario)
-                .Include(r => r.Academia)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -52,19 +50,13 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
         {
             return await _context.RegistrosExercicios
                 .Where(r => r.UsuarioId == usuarioId)
-                .Include(r => r.Academia)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        /// <inheritdoc/>
-        public async Task<IEnumerable<RegistroExercicio>> ObterPorAcademiaAsync(int academiaId)
+        public Task<IEnumerable<RegistroExercicio>> ObterPorAcademiaAsync(int academiaId)
         {
-            return await _context.RegistrosExercicios
-                .Where(r => r.AcademiaId == academiaId)
-                .Include(r => r.Usuario)
-                .AsNoTracking()
-                .ToListAsync();
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>

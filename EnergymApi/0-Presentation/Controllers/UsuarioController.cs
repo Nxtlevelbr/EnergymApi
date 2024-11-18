@@ -7,6 +7,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EnergymApi._0_Presentation.Controllers
 {
+    /// <summary>
+    /// Controlador responsável por gerenciar operações relacionadas aos usuários.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class UsuarioController : ControllerBase
@@ -14,15 +17,24 @@ namespace EnergymApi._0_Presentation.Controllers
         private readonly IUsuarioService _usuarioService;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inicializa uma nova instância de <see cref="UsuarioController"/>.
+        /// </summary>
+        /// <param name="usuarioService">Serviço de usuários.</param>
+        /// <param name="mapper">Instância do AutoMapper.</param>
         public UsuarioController(IUsuarioService usuarioService, IMapper mapper)
         {
             _usuarioService = usuarioService;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Obtém todos os usuários cadastrados.
+        /// </summary>
+        /// <returns>Uma lista de usuários.</returns>
         [HttpGet]
         [SwaggerOperation(Summary = "Obter todos os usuários", Description = "Retorna uma lista de todos os usuários cadastrados.")]
-        [SwaggerResponse(200, "Lista de usuários obtida com sucesso.")]
+        [SwaggerResponse(200, "Lista de usuários obtida com sucesso.", typeof(IEnumerable<UsuarioDto>))]
         [SwaggerResponse(204, "Nenhum usuário encontrado.")]
         public async Task<ActionResult<IEnumerable<UsuarioDto>>> GetUsuarios()
         {
@@ -36,9 +48,14 @@ namespace EnergymApi._0_Presentation.Controllers
             return Ok(usuariosDto);
         }
 
+        /// <summary>
+        /// Obtém um usuário específico pelo ID.
+        /// </summary>
+        /// <param name="id">ID do usuário.</param>
+        /// <returns>Os detalhes do usuário.</returns>
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Obter usuário por ID", Description = "Retorna um usuário específico pelo ID.")]
-        [SwaggerResponse(200, "Usuário encontrado.")]
+        [SwaggerResponse(200, "Usuário encontrado.", typeof(UsuarioDto))]
         [SwaggerResponse(404, "Usuário não encontrado.")]
         public async Task<ActionResult<UsuarioDto>> GetUsuarioById(int id)
         {
@@ -54,6 +71,11 @@ namespace EnergymApi._0_Presentation.Controllers
             }
         }
 
+        /// <summary>
+        /// Adiciona um novo usuário ao sistema.
+        /// </summary>
+        /// <param name="usuarioDto">Dados do novo usuário.</param>
+        /// <returns>O usuário recém-criado.</returns>
         [HttpPost]
         [SwaggerOperation(Summary = "Adicionar um novo usuário", Description = "Cadastra um novo usuário.")]
         [SwaggerResponse(201, "Usuário criado com sucesso.", typeof(UsuarioDto))]
@@ -73,10 +95,16 @@ namespace EnergymApi._0_Presentation.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Atualiza os dados de um usuário existente.
+        /// </summary>
+        /// <param name="id">ID do usuário a ser atualizado.</param>
+        /// <param name="usuarioDto">Dados atualizados do usuário.</param>
+        /// <returns>Resposta sem conteúdo se a atualização for bem-sucedida.</returns>
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Atualizar um usuário", Description = "Atualiza os dados de um usuário existente.")]
         [SwaggerResponse(204, "Usuário atualizado com sucesso.")]
+        [SwaggerResponse(400, "O ID do usuário não corresponde ao ID na URL.")]
         [SwaggerResponse(404, "Usuário não encontrado.")]
         public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuarioDto usuarioDto)
         {
@@ -97,6 +125,11 @@ namespace EnergymApi._0_Presentation.Controllers
             }
         }
 
+        /// <summary>
+        /// Remove um usuário do sistema pelo ID.
+        /// </summary>
+        /// <param name="id">ID do usuário a ser removido.</param>
+        /// <returns>Resposta sem conteúdo se a exclusão for bem-sucedida.</returns>
         [HttpDelete("{id}")]
         [SwaggerOperation(Summary = "Excluir um usuário", Description = "Remove um usuário do sistema pelo ID.")]
         [SwaggerResponse(204, "Usuário excluído com sucesso.")]

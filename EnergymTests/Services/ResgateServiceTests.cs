@@ -34,19 +34,17 @@ namespace EnergymTests.Services
             // Arrange
             var usuarioId = 1;
             var premioId = 1;
-            var usuario = new Usuario { Id = usuarioId, Pontos = 0 };
-            var premio = new Premio { Id = premioId, Pontos = 50, Ativo = true };
+            var pontosNecessarios = 50;
 
-            // Registros de exercício com total de 55 pontos
+            var usuario = new Usuario { Id = usuarioId, Pontos = 0 };
+            var premio = new Premio { Id = premioId, Pontos = pontosNecessarios, Ativo = true };
+
             var registrosExercicio = new List<RegistroExercicio>
             {
-                new RegistroExercicio { Id = 1, UsuarioId = usuarioId, Km = 30 },
-                new RegistroExercicio { Id = 2, UsuarioId = usuarioId, Km = 25 },
-                new RegistroExercicio { Id = 3, UsuarioId = usuarioId, Km = 12 }
-                
+                new RegistroExercicio { Id = 1, UsuarioId = usuarioId, Km = 200 }, // Assume que 1 Km = 1 ponto
+                new RegistroExercicio { Id = 2, UsuarioId = usuarioId, Km = 150 }
             };
 
-            // Mockando os métodos dos repositórios
             _usuarioRepositoryMock
                 .Setup(repo => repo.ObterPorIdAsync(usuarioId))
                 .ReturnsAsync(usuario);
@@ -56,7 +54,7 @@ namespace EnergymTests.Services
                 .ReturnsAsync(premio);
 
             _registroExercicioRepositoryMock
-                .Setup(repo => repo.ObterPorUsuarioIdAsync(usuarioId))
+                .Setup(repo => repo.ObterPorUsuarioAsync(usuarioId))
                 .ReturnsAsync(registrosExercicio);
 
             _resgateRepositoryMock
@@ -66,15 +64,18 @@ namespace EnergymTests.Services
             _usuarioRepositoryMock
                 .Setup(repo => repo.AtualizarAsync(It.IsAny<Usuario>()))
                 .ReturnsAsync((Usuario u) => u);
-            
+
+            // Act
             var resultado = await _resgateService.RegistrarResgate(usuarioId, premioId);
 
-            
+            // Assert
             Assert.NotNull(resultado);
             Assert.Equal(usuarioId, resultado.UsuarioId);
             Assert.Equal(premioId, resultado.PremioId);
 
-            _usuarioRepositoryMock.Verify(repo => repo.AtualizarAsync(It.Is<Usuario>(u => u.Pontos == 5)), Times.Once);
+            var pontosRestantes = 350 - pontosNecessarios; // 200 + 150 - 50
+
+            _usuarioRepositoryMock.Verify(repo => repo.AtualizarAsync(It.Is<Usuario>(u => u.Pontos == pontosRestantes)), Times.Once);
             _resgateRepositoryMock.Verify(repo => repo.AdicionarAsync(It.IsAny<Resgate>()), Times.Once);
         }
 

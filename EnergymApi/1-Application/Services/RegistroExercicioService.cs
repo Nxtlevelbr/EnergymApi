@@ -26,6 +26,7 @@ namespace EnergymApi._1_Application.Services
             return await _registroExercicioRepository.AdicionarAsync(registroExercicio);
         }
 
+
         /// <inheritdoc />
         public async Task<RegistroExercicio> ObterPorIdAsync(int id)
         {

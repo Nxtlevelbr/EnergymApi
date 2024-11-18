@@ -8,7 +8,9 @@ namespace EnergymApi._1_Application.Mappings
     {
         public RegistroExercicioProfile()
         {
-            CreateMap<RegistroExercicioDto, RegistroExercicio>().ReverseMap();
+            CreateMap<RegistroExercicioDto, RegistroExercicio>()
+                .ForMember(dest => dest.Usuario, opt => opt.Ignore()) // Ignora a propriedade Usuario
+                .ReverseMap();
         }
     }
 }
