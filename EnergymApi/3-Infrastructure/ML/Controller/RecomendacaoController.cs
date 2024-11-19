@@ -1,48 +1,35 @@
-using Microsoft.AspNetCore.Mvc;
-using EnergymApi._3_Infrastructure.ML;
 using EnergymApi._3_Infrastructure.ML.Services;
+using Microsoft.AspNetCore.Mvc;
 
-namespace EnergymApi._3_Infrastructure.ML.Controller
+namespace EnergymApi._0_Presentation.Controllers
 {
+    /// <summary>
+    /// Controlador para expor os serviços de recomendação de prêmios.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class RecomendacaoController : ControllerBase
     {
         private readonly PremioRecomendationService _premioRecomendationService;
 
+        /// <summary>
+        /// Inicializa o controlador de recomendação.
+        /// </summary>
         public RecomendacaoController(PremioRecomendationService premioRecomendationService)
         {
             _premioRecomendationService = premioRecomendationService;
         }
 
         /// <summary>
-        /// Sugere prêmios com base nos pontos acumulados do usuário.
+        /// Retorna prêmios recomendados para o usuário com base nos pontos.
         /// </summary>
-        /// <param name="input">Modelo contendo os pontos acumulados.</param>
-        /// <returns>Lista de prêmios recomendados.</returns>
         [HttpPost("sugerir")]
-        public IActionResult SugerirPremios([FromBody] PremioModelInput input)
+        public IActionResult SugerirPremios([FromBody] float pontos)
         {
-            if (input.PontosAcumulados < 0)
-            {
-                return BadRequest("Pontos acumulados não podem ser negativos.");
-            }
+            if (pontos < 0) return BadRequest("Pontos acumulados devem ser não negativos.");
 
-            var recomendacoes = _premioRecomendationService.RecomendarPremios(input.PontosAcumulados);
-            if (recomendacoes == null || !recomendacoes.Any())
-            {
-                return NotFound("Nenhum prêmio disponível para os pontos acumulados.");
-            }
-
-            return Ok(new { Recomendacoes = recomendacoes });
+            var recomendacoes = _premioRecomendationService.RecomendarPremios(pontos);
+            return recomendacoes.Any() ? Ok(recomendacoes) : NotFound("Nenhum prêmio encontrado.");
         }
-    }
-
-    /// <summary>
-    /// Modelo de entrada para recomendação de prêmios.
-    /// </summary>
-    public class PremioModelInput
-    {
-        public int PontosAcumulados { get; set; }
     }
 }
