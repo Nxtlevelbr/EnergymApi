@@ -54,6 +54,7 @@ namespace EnergymApi._3_Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc />
         public Task<IEnumerable<RegistroExercicio>> ObterPorAcademiaAsync(int academiaId)
         {
             throw new NotImplementedException();

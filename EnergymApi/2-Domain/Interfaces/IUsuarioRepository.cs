@@ -2,6 +2,9 @@ using EnergymApi._2_Domain.Models;
 
 namespace EnergymApi._2_Domain.Interfaces
 {
+    /// <summary>
+    /// interface do repositorio de usuario
+    /// </summary>
     public interface IUsuarioRepository
     {
         /// <summary>

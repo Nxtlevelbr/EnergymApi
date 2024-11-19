@@ -67,37 +67,78 @@ namespace EnergymTests.Services
         [Fact]
         public async Task AdicionarUsuario_DeveSalvarUsuario()
         {
-            var usuario = new Usuario { Id = 1, Username = "NewUser" };
+            // Arrange
+            var usuario = new Usuario
+            {
+                Id = 1,
+                Username = "usuarioTeste",
+                Email = "teste@teste.com",
+                CPF = "12345678901",
+                Senha = "SenhaValida123", // Adicionando senha válida
+                DataNascimento = new DateTime(1990, 1, 1),
+                Sexo = "M",
+                Pontos = 0
+            };
 
-            _usuarioRepositoryMock.Setup(repo => repo.AdicionarAsync(It.IsAny<Usuario>()))
-                                  .ReturnsAsync(usuario);
+            _usuarioRepositoryMock
+                .Setup(repo => repo.AdicionarAsync(It.IsAny<Usuario>()))
+                .ReturnsAsync((Usuario u) => u);
 
+            // Act
             var resultado = await _usuarioService.AdicionarAsync(usuario);
 
+            // Assert
             Assert.NotNull(resultado);
-            Assert.Equal("NewUser", resultado.Username);
+            Assert.Equal("usuarioTeste", resultado.Username);
             _usuarioRepositoryMock.Verify(repo => repo.AdicionarAsync(It.IsAny<Usuario>()), Times.Once);
         }
+
 
         [Fact]
         public async Task AtualizarUsuario_DeveAtualizarUsuarioQuandoEncontrado()
         {
-            var usuarioExistente = new Usuario { Id = 1, Username = "OldUser" };
-            var usuarioAtualizado = new Usuario { Id = 1, Username = "UpdatedUser" };
+            // Arrange
+            var usuarioExistente = new Usuario
+            {
+                Id = 1,
+                Username = "usuarioAntigo",
+                Email = "antigo@teste.com",
+                CPF = "12345678901",
+                Senha = "SenhaAntiga123", // Senha antiga válida
+                DataNascimento = new DateTime(1990, 1, 1),
+                Sexo = "M",
+                Pontos = 10
+            };
 
-            _usuarioRepositoryMock.Setup(repo => repo.ObterPorIdAsync(1))
-                                  .ReturnsAsync(usuarioExistente);
+            var usuarioAtualizado = new Usuario
+            {
+                Id = 1,
+                Username = "usuarioAtualizado",
+                Email = "atualizado@teste.com",
+                CPF = "12345678901",
+                Senha = "SenhaNova123", // Senha nova válida
+                DataNascimento = new DateTime(1990, 1, 1),
+                Sexo = "M",
+                Pontos = 20
+            };
 
-            _usuarioRepositoryMock.Setup(repo => repo.AtualizarAsync(usuarioAtualizado))
-                                  .ReturnsAsync(usuarioAtualizado);
+            _usuarioRepositoryMock
+                .Setup(repo => repo.ObterPorIdAsync(usuarioExistente.Id))
+                .ReturnsAsync(usuarioExistente);
 
+            _usuarioRepositoryMock
+                .Setup(repo => repo.AtualizarAsync(It.IsAny<Usuario>()))
+                .ReturnsAsync((Usuario u) => u);
+
+            // Act
             var resultado = await _usuarioService.AtualizarAsync(usuarioAtualizado);
 
+            // Assert
             Assert.NotNull(resultado);
-            Assert.Equal("UpdatedUser", resultado.Username);
-            _usuarioRepositoryMock.Verify(repo => repo.ObterPorIdAsync(1), Times.Once);
-            _usuarioRepositoryMock.Verify(repo => repo.AtualizarAsync(usuarioAtualizado), Times.Once);
+            Assert.Equal("usuarioAtualizado", resultado.Username);
+            _usuarioRepositoryMock.Verify(repo => repo.AtualizarAsync(It.IsAny<Usuario>()), Times.Once);
         }
+
 
         [Fact]
         public async Task DeletarUsuario_DeveRemoverUsuarioQuandoEncontrado()

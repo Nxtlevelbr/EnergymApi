@@ -93,16 +93,34 @@ namespace EnergymApi._1_Application.Services
             return await _usuarioRepository.DeletarAsync(id);
         }
 
+        /// <summary>
+        /// obter por nome de usuario
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public Task<Usuario> ObterPorUsernameAsync(string username)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// obeter por emial de usuario
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public Task<Usuario> ObterPorEmailAsync(string email)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// obter por cpf de usuario
+        /// </summary>
+        /// <param name="cpf"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public Task<Usuario> ObterPorCPFAsync(string cpf)
         {
             throw new NotImplementedException();
