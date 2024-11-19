@@ -1,17 +1,38 @@
 namespace EnergymApi._1_Application.DTO
 {
+    /// <summary>
+    /// DTO para representar um Prêmio.
+    /// </summary>
     public class PremioDto
     {
-        public int Id { get; set; } // Identificador do prêmio
+        /// <summary>
+        /// Identificador único do prêmio.
+        /// </summary>
+        public int Id { get; set; }
 
-        public string Descricao { get; set; } // Descrição do prêmio
+        /// <summary>
+        /// Descrição do prêmio.
+        /// </summary>
+        public string Descricao { get; set; }
 
-        public int Pontos { get; set; } // Pontos necessários para resgatar o prêmio
+        /// <summary>
+        /// Pontos necessários para resgatar o prêmio.
+        /// </summary>
+        public int Pontos { get; set; }
 
-        public string Empresa { get; set; } // Empresa fornecedora do prêmio
+        /// <summary>
+        /// Nome da empresa fornecedora do prêmio.
+        /// </summary>
+        public string Empresa { get; set; }
 
-        public string Tipo { get; set; } // Tipo do prêmio, ex: "Produto" ou "Serviço"
+        /// <summary>
+        /// Tipo do prêmio, por exemplo, "Produto" ou "Serviço".
+        /// </summary>
+        public string Tipo { get; set; }
 
-        public bool Ativo { get; set; } // Indica se o prêmio está ativo
+        /// <summary>
+        /// Indica se o prêmio está ativo.
+        /// </summary>
+        public bool Ativo { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace EnergymTests;
 
-public class mappingconfigtest
+public class Mappingconfigtest
 {
     [Fact]
     public void AutoMapper_Configuration_IsValid()

@@ -1,17 +1,38 @@
 namespace EnergymApi._1_Application.DTO
 {
+    /// <summary>
+    /// DTO para representar um resgate de prêmio.
+    /// </summary>
     public class ResgateDto
     {
-        public int Id { get; set; } // Identificador do resgate
+        /// <summary>
+        /// Identificador único do resgate.
+        /// </summary>
+        public int Id { get; set; }
 
-        public int UsuarioId { get; set; } // Identificador do usuário que realizou o resgate
+        /// <summary>
+        /// Identificador único do usuário que realizou o resgate.
+        /// </summary>
+        public int UsuarioId { get; set; }
 
-        public string UsuarioNome { get; set; } // Nome do usuário (opcional, caso desejado para exibição)
+        /// <summary>
+        /// Nome do usuário que realizou o resgate (opcional).
+        /// </summary>
+        public string UsuarioNome { get; set; }
 
-        public int PremioId { get; set; } // Identificador do prêmio resgatado
+        /// <summary>
+        /// Identificador único do prêmio resgatado.
+        /// </summary>
+        public int PremioId { get; set; }
 
-        public string PremioDescricao { get; set; } // Descrição do prêmio (opcional, caso desejado para exibição)
+        /// <summary>
+        /// Descrição do prêmio resgatado (opcional).
+        /// </summary>
+        public string PremioDescricao { get; set; }
 
-        public DateTime DataHora { get; set; } // Data e hora do resgate
+        /// <summary>
+        /// Data e hora em que o resgate foi realizado.
+        /// </summary>
+        public DateTime DataHora { get; set; }
     }
 }

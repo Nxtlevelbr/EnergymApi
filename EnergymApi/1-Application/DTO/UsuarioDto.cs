@@ -1,19 +1,43 @@
 namespace EnergymApi._1_Application.DTO
 {
+    /// <summary>
+    /// DTO para representar um usuário.
+    /// </summary>
     public class UsuarioDto
     {
-        public int Id { get; set; } // Identificador do usuário
+        /// <summary>
+        /// Identificador único do usuário.
+        /// </summary>
+        public int Id { get; set; }
 
-        public string Username { get; set; } // Nome de usuário
+        /// <summary>
+        /// Nome de usuário.
+        /// </summary>
+        public string Username { get; set; }
 
-        public string Email { get; set; } // Endereço de email
+        /// <summary>
+        /// Endereço de email do usuário.
+        /// </summary>
+        public string Email { get; set; }
 
-        public string CPF { get; set; } // CPF do usuário
+        /// <summary>
+        /// CPF do usuário.
+        /// </summary>
+        public string CPF { get; set; }
 
-        public DateTime DataNascimento { get; set; } // Data de nascimento
+        /// <summary>
+        /// Data de nascimento do usuário.
+        /// </summary>
+        public DateTime DataNascimento { get; set; }
 
-        public string Sexo { get; set; } // Sexo do usuário
+        /// <summary>
+        /// Sexo do usuário.
+        /// </summary>
+        public string Sexo { get; set; }
 
-        public int Pontos { get; set; } // Pontos acumulados pelo usuário
+        /// <summary>
+        /// Pontos acumulados pelo usuário.
+        /// </summary>
+        public int Pontos { get; set; }
     }
 }

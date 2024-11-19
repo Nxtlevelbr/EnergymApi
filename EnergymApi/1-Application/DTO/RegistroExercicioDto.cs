@@ -1,13 +1,28 @@
 namespace EnergymApi._1_Application.DTO
 {
+    /// <summary>
+    /// DTO para representar um registro de exercício.
+    /// </summary>
     public class RegistroExercicioDto
     {
-        public int Id { get; set; } // ID do registro
+        /// <summary>
+        /// Identificador único do registro de exercício.
+        /// </summary>
+        public int Id { get; set; }
 
-        public int UsuarioId { get; set; } // ID do usuário
+        /// <summary>
+        /// Identificador único do usuário associado ao registro.
+        /// </summary>
+        public int UsuarioId { get; set; }
 
-        public double Km { get; set; } // Quilômetros percorridos
+        /// <summary>
+        /// Quilômetros percorridos durante o exercício.
+        /// </summary>
+        public double Km { get; set; }
 
-        public DateTime DataHora { get; set; } // Data e hora do registro
+        /// <summary>
+        /// Data e hora em que o exercício foi registrado.
+        /// </summary>
+        public DateTime DataHora { get; set; }
     }
 }

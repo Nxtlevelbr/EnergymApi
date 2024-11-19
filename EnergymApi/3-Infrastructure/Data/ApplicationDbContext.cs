@@ -4,19 +4,54 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EnergymApi._3_Infrastructure.Data
 {
+    /// <summary>
+    /// Representa o contexto do banco de dados para a aplicação Energym.
+    /// </summary>
     public class ApplicationDbContext : DbContext
     {
+        /// <summary>
+        /// Inicializa uma nova instância do <see cref="ApplicationDbContext"/> com as opções especificadas.
+        /// </summary>
+        /// <param name="options">Opções de configuração do DbContext.</param>
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+        /// <summary>
+        /// DbSet que representa a tabela de usuários.
+        /// </summary>
         public DbSet<Usuario> Usuarios { get; set; }
+
+        /// <summary>
+        /// DbSet que representa a tabela de academias.
+        /// </summary>
         public DbSet<Academia> Academias { get; set; }
+
+        /// <summary>
+        /// DbSet que representa a tabela de endereços.
+        /// </summary>
         public DbSet<Endereco> Enderecos { get; set; }
+
+        /// <summary>
+        /// DbSet que representa a tabela de registros de exercícios.
+        /// </summary>
         public DbSet<RegistroExercicio> RegistrosExercicios { get; set; }
+
+        /// <summary>
+        /// DbSet que representa a tabela de prêmios.
+        /// </summary>
         public DbSet<Premio> Premios { get; set; }
+
+        /// <summary>
+        /// DbSet que representa a tabela de resgates.
+        /// </summary>
         public DbSet<Resgate> Resgates { get; set; }
 
+        /// <summary>
+        /// Configura o mapeamento das entidades para as tabelas do banco de dados.
+        /// </summary>
+        /// <param name="modelBuilder">Construtor do modelo para configurar as entidades.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Conversão de bool para int para a coluna 'ativo'
             var boolToIntConverter = new ValueConverter<bool, int>(
                 v => v ? 1 : 0,
                 v => v == 1

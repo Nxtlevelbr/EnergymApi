@@ -4,11 +4,18 @@ using EnergymApi._2_Domain.Models;
 
 namespace EnergymApi._1_Application.Mappings
 {
+    /// <summary>
+    /// Configuração de mapeamento para a entidade Endereco.
+    /// </summary>
     public class EnderecoProfile : Profile
     {
+        /// <summary>
+        /// Inicializa uma nova instância de <see cref="EnderecoProfile"/>.
+        /// </summary>
         public EnderecoProfile()
         {
-            CreateMap<EnderecoDto, Endereco>().ReverseMap();
+            CreateMap<EnderecoDto, Endereco>()
+                .ReverseMap(); 
         }
     }
 }
