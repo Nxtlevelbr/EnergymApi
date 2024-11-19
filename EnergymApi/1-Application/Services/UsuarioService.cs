@@ -1,7 +1,7 @@
 using EnergymApi._1_Application.Interfaces;
 using EnergymApi._2_Domain.Interfaces;
 using EnergymApi._2_Domain.Models;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace EnergymApi._1_Application.Services
 {
@@ -24,6 +24,11 @@ namespace EnergymApi._1_Application.Services
         /// <inheritdoc />
         public async Task<Usuario> AdicionarAsync(Usuario usuario)
         {
+            if (string.IsNullOrWhiteSpace(usuario.Senha))
+            {
+                throw new InvalidOperationException("Senha é obrigatória.");
+            }
+
             if (await _usuarioRepository.ObterPorUsernameAsync(usuario.Username) != null)
             {
                 throw new InvalidOperationException("Username já está em uso.");
@@ -39,7 +44,30 @@ namespace EnergymApi._1_Application.Services
                 throw new InvalidOperationException("CPF já está em uso.");
             }
 
+            // Qualquer regra de negócios adicional pode ser aplicada aqui.
             return await _usuarioRepository.AdicionarAsync(usuario);
+        }
+
+        /// <inheritdoc />
+        public async Task<Usuario> AtualizarAsync(Usuario usuario)
+        {
+            if (string.IsNullOrWhiteSpace(usuario.Senha))
+            {
+                throw new InvalidOperationException("Senha é obrigatória.");
+            }
+
+            if (await _usuarioRepository.ObterPorIdAsync(usuario.Id) == null)
+            {
+                throw new KeyNotFoundException("Usuário não encontrado.");
+            }
+
+            return await _usuarioRepository.AtualizarAsync(usuario);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<Usuario>> ObterTodosAsync()
+        {
+            return await _usuarioRepository.ObterTodosAsync();
         }
 
         /// <inheritdoc />
@@ -55,23 +83,6 @@ namespace EnergymApi._1_Application.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Usuario>> ObterTodosAsync()
-        {
-            return await _usuarioRepository.ObterTodosAsync();
-        }
-
-        /// <inheritdoc />
-        public async Task<Usuario> AtualizarAsync(Usuario usuario)
-        {
-            if (await _usuarioRepository.ObterPorIdAsync(usuario.Id) == null)
-            {
-                throw new KeyNotFoundException("Usuário não encontrado.");
-            }
-
-            return await _usuarioRepository.AtualizarAsync(usuario);
-        }
-
-        /// <inheritdoc />
         public async Task<bool> DeletarAsync(int id)
         {
             if (await _usuarioRepository.ObterPorIdAsync(id) == null)
@@ -82,22 +93,19 @@ namespace EnergymApi._1_Application.Services
             return await _usuarioRepository.DeletarAsync(id);
         }
 
-        /// <inheritdoc />
-        public async Task<Usuario> ObterPorUsernameAsync(string username)
+        public Task<Usuario> ObterPorUsernameAsync(string username)
         {
-            return await _usuarioRepository.ObterPorUsernameAsync(username);
+            throw new NotImplementedException();
         }
 
-        /// <inheritdoc />
-        public async Task<Usuario> ObterPorEmailAsync(string email)
+        public Task<Usuario> ObterPorEmailAsync(string email)
         {
-            return await _usuarioRepository.ObterPorEmailAsync(email);
+            throw new NotImplementedException();
         }
 
-        /// <inheritdoc />
-        public async Task<Usuario> ObterPorCPFAsync(string cpf)
+        public Task<Usuario> ObterPorCPFAsync(string cpf)
         {
-            return await _usuarioRepository.ObterPorCpfAsync(cpf);
+            throw new NotImplementedException();
         }
     }
 }

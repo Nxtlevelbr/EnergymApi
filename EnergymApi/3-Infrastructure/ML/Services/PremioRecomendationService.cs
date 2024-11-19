@@ -1,24 +1,33 @@
 using Microsoft.ML;
 using EnergymApi._3_Infrastructure.ML.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace EnergymApi._3_Infrastructure.ML.Services
 {
+    /// <summary>
+    /// Serviço de recomendação de prêmios com base na pontuação acumulada dos usuários.
+    /// </summary>
     public class PremioRecomendationService
     {
         private readonly MLContext _mlContext;
         private ITransformer? _model;
-        private const string ModelPath = "ML/Models/PremioRecomendationModel.zip"; // Caminho relativo
-        private const string DataPath = "Data/premios_dataset.csv"; // Caminho relativo
+        private readonly string _modelPath;
+        private readonly string _dataPath;
 
+        /// <summary>
+        /// Inicializa uma nova instância do serviço de recomendação de prêmios.
+        /// </summary>
         public PremioRecomendationService()
         {
             _mlContext = new MLContext(seed: 0);
 
-            if (File.Exists(ModelPath))
+            // Caminhos absolutos baseados no diretório da solução
+            var basePath = Directory.GetParent(AppContext.BaseDirectory)?.Parent?.Parent?.Parent?.FullName;
+            if (basePath == null) throw new DirectoryNotFoundException("O diretório base não foi encontrado.");
+
+            _modelPath = Path.Combine(basePath, "3-Infrastructure", "ML", "Models", "PremioRecomendationModel.zip");
+            _dataPath = Path.Combine(basePath, "3-Infrastructure", "Data", "premios_dataset.csv");
+
+            if (File.Exists(_modelPath))
             {
                 CarregarModelo();
             }
@@ -29,17 +38,20 @@ namespace EnergymApi._3_Infrastructure.ML.Services
             }
         }
 
+        /// <summary>
+        /// Treina o modelo de recomendação.
+        /// </summary>
         private void TreinarModelo()
         {
-            if (!File.Exists(DataPath))
-                throw new FileNotFoundException($"O arquivo de dados '{DataPath}' não foi encontrado.");
+            if (!File.Exists(_dataPath))
+                throw new FileNotFoundException($"O arquivo de dados '{_dataPath}' não foi encontrado.");
 
             var trainingData = _mlContext.Data.LoadFromTextFile<UsuarioPremioData>(
-                path: DataPath,
+                path: _dataPath,
                 hasHeader: true,
                 separatorChar: ',');
 
-            var pipeline = _mlContext.Transforms.Conversion.MapValueToKey("PontosAcumulados")
+            var pipeline = _mlContext.Transforms.Conversion.MapValueToKey("PremioId")
                 .Append(_mlContext.Transforms.Conversion.MapValueToKey("UsuarioId"))
                 .Append(_mlContext.Recommendation().Trainers.MatrixFactorization(
                     labelColumnName: "PremioId",
@@ -47,16 +59,16 @@ namespace EnergymApi._3_Infrastructure.ML.Services
                     matrixColumnIndexColumnName: "PontosAcumulados"));
 
             _model = pipeline.Fit(trainingData);
-
-            var predictions = _model.Transform(trainingData);
-            var metrics = _mlContext.Regression.Evaluate(predictions, labelColumnName: "PremioId");
-
-            Console.WriteLine($"RMSE: {metrics.RootMeanSquaredError}, MAE: {metrics.MeanAbsoluteError}");
+            SalvarModelo();
         }
 
+
+        /// <summary>
+        /// Salva o modelo treinado no disco.
+        /// </summary>
         private void SalvarModelo()
         {
-            var directory = Path.GetDirectoryName(ModelPath);
+            var directory = Path.GetDirectoryName(_modelPath);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory!);
@@ -64,23 +76,32 @@ namespace EnergymApi._3_Infrastructure.ML.Services
 
             if (_model != null)
             {
-                _mlContext.Model.Save(_model, null, ModelPath);
+                _mlContext.Model.Save(_model, null, _modelPath);
             }
         }
 
+        /// <summary>
+        /// Carrega o modelo salvo do disco.
+        /// </summary>
         private void CarregarModelo()
         {
-            if (File.Exists(ModelPath))
+            if (File.Exists(_modelPath))
             {
-                _model = _mlContext.Model.Load(ModelPath, out _);
+                _model = _mlContext.Model.Load(_modelPath, out _);
             }
             else
             {
-                throw new FileNotFoundException($"Modelo não encontrado em {ModelPath}");
+                throw new FileNotFoundException($"Modelo não encontrado em {_modelPath}");
             }
         }
 
-        public List<int> RecomendarPremios(float pontos)
+        /// <summary>
+        /// Recomenda prêmios com base nos pontos acumulados do usuário.
+        /// </summary>
+        /// <param name="pontos">Pontos acumulados pelo usuário.</param>
+        /// <returns>Lista de descrições dos prêmios recomendados.</returns>
+        /// <exception cref="InvalidOperationException">Se o modelo não estiver carregado.</exception>
+        public List<string> RecomendarPremios(float pontos)
         {
             if (_model == null)
                 throw new InvalidOperationException("O modelo não está carregado.");
@@ -88,7 +109,24 @@ namespace EnergymApi._3_Infrastructure.ML.Services
             var predictionEngine = _mlContext.Model.CreatePredictionEngine<UsuarioPremioData, PremioPrediction>(_model);
             var prediction = predictionEngine.Predict(new UsuarioPremioData { PontosAcumulados = pontos });
 
-            return prediction.PremioIdPredictions?.Select(p => (int)p).Where(p => p > 0).ToList() ?? new List<int>();
+            var premioId = (int)Math.Round(prediction.Score);
+
+            var premioMapping = new Dictionary<int, string>
+            {
+                { 1, "voucher 15% desconto" },
+                { 2, "15% desconto curso SAP" },
+                { 3, "ingresso fórmula 1" },
+                { 4, "50% desconto próxima mensalidade" },
+                { 5, "certificação grátis SAP" }
+            };
+
+            return premioMapping.TryGetValue(premioId, out var premio)
+                ? new List<string> { $"Prêmio Recomendado: {premio}" }
+                : new List<string> { "Prêmio desconhecido." };
         }
+
+
+
+
     }
 }

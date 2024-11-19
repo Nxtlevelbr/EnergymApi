@@ -26,10 +26,16 @@ namespace EnergymApi._0_Presentation.Controllers
         [HttpPost("sugerir")]
         public IActionResult SugerirPremios([FromBody] float pontos)
         {
-            if (pontos < 0) return BadRequest("Pontos acumulados devem ser não negativos.");
-
             var recomendacoes = _premioRecomendationService.RecomendarPremios(pontos);
-            return recomendacoes.Any() ? Ok(recomendacoes) : NotFound("Nenhum prêmio encontrado.");
+
+            if (recomendacoes.Any(r => r.Contains("Nenhum prêmio")))
+            {
+                return NotFound(new { message = "Nenhum prêmio disponível para os pontos acumulados." });
+            }
+
+            return Ok(new { recomendacoes });
         }
+
+
     }
 }

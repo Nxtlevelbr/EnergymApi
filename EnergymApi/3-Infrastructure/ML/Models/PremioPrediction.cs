@@ -3,14 +3,15 @@ using Microsoft.ML.Data;
 namespace EnergymApi._3_Infrastructure.ML.Models
 {
     /// <summary>
-    /// Modelo de previsão contendo os IDs dos prêmios recomendados.
+    /// Classe de previsão para recomendar prêmios.
     /// </summary>
     public class PremioPrediction
     {
         /// <summary>
-        /// IDs de prêmios recomendados com base na pontuação do usuário.
+        /// Score da previsão do prêmio.
+        /// Representa o ID do prêmio recomendado com base na pontuação.
         /// </summary>
         [ColumnName("Score")]
-        public float[]? PremioIdPredictions { get; set; }
+        public float Score { get; set; }
     }
 }

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace EnergymApi._1_Application.DTO
 {
     /// <summary>
@@ -39,5 +41,15 @@ namespace EnergymApi._1_Application.DTO
         /// Pontos acumulados pelo usuário.
         /// </summary>
         public int Pontos { get; set; }
+
+        /// <summary>
+        /// Senha do usuário.
+        /// </summary>
+        /// <remarks>
+        /// A senha é obrigatória e deve ser preenchida para criar ou atualizar um usuário.
+        /// </remarks>
+        [Required(ErrorMessage = "Senha é obrigatória.")]
+        [StringLength(100, ErrorMessage = "A senha deve ter entre {2} e {1} caracteres.", MinimumLength = 6)]
+        public string Senha { get; set; }
     }
 }

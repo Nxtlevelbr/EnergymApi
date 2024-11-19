@@ -16,7 +16,6 @@ namespace EnergymApi._1_Application.Mappings
         {
             CreateMap<Usuario, UsuarioDto>()
                 .ReverseMap()
-                .ForMember(dest => dest.Senha, opt => opt.Ignore()) // Ignora a propriedade Senha no mapeamento reverso
                 .ForMember(dest => dest.RegistrosExercicios, opt => opt.Ignore()) // Ignora a coleção de RegistrosExercicios no mapeamento reverso
                 .ForMember(dest => dest.Resgates, opt => opt.Ignore()); // Ignora a coleção de Resgates no mapeamento reverso
         }
