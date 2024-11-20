@@ -78,7 +78,7 @@ treinado com base nos pontos acumulados pelos usuários.
 ### Swagger/OpenAPI
 A API conta com documentação interativa por meio do **Swagger**, permitindo a exploração de endpoints diretamente no navegador.
 
-- **Acesse:** `http://localhost:{5070}/swagger`
+- **Acesse:** `http://localhost:5070/swagger`
 
 ---
 
