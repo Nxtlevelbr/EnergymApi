@@ -151,6 +151,46 @@ Para garantir a consistência e o correto funcionamento do sistema, siga esta or
 - **POST /api/registrosexercicios**: Adiciona um novo registro.
 
 ---
+## 🧪 Testes Automatizados
+
+Para garantir a qualidade e a estabilidade da aplicação, o projeto conta com uma suíte de testes automatizados que cobre os principais cenários. Seguem as instruções para executar os testes:
+
+### Passos para Executar os Testes
+
+1. **Restaure os Pacotes de Teste**
+   
+   Certifique-se de que os pacotes necessários para os testes estejam instalados:
+   
+   ```bash
+   dotnet restore
+   
+2.Antes de executar os testes, compile a solução para garantir que tudo esteja atualizado:
+
+dotnet build
+
+3.Execute os Testes
+
+Navegue até o diretório do projeto de testes e execute o seguinte comando para rodar todos os testes automatizados:
+
+dotnet test
+
+4.Análise dos Resultados
+
+Após a execução, você verá um relatório com os resultados dos testes diretamente no console. Ele indicará quais testes passaram, falharam ou foram ignorados.
+Estrutura de Testes
+Os testes estão organizados nas seguintes categorias:
+
+Testes de Unidade (Unit Tests): Validam o comportamento de métodos individuais, garantindo que cada função realiza corretamente a sua responsabilidade.
+
+Testes de Integração (Integration Tests): Garantem que os diferentes módulos da aplicação trabalham juntos conforme esperado, verificando a interação entre serviços, repositórios e banco de dados.
+
+Testes de Regressão: Asseguram que novas alterações no código não introduzam falhas em funcionalidades já existentes.
+
+Ferramentas e Tecnologias de Teste
+xUnit: Framework de teste para criar e organizar os testes.
+Moq: Biblioteca para criação de objetos mock, permitindo testar componentes isoladamente.
+FluentAssertions: Biblioteca para melhorar a legibilidade das asserções nos testes
+
 
 ## 🔍 Métricas e Indicadores
 
