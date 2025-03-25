@@ -1,12 +1,9 @@
 # EnergymApi
 
-## Equipe de Desenvolvimento
+## Desenvolvimento
 
 - **RM99841** - Marcel Prado Soddano  
-- **RM551261** - Giovanni Sguizzardi  
-- **RM98057** - Nicolas E. Inohue  
-- **RM552302** - Samara Moreira  
-- **RM552293** - Vinicius Monteiro  
+
 
 ---
 
